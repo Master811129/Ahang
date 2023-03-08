@@ -1,4 +1,7 @@
 # Prerequisites
+soloud/build
+build
+.cache
 *.d
 
 # Compiled Object files
