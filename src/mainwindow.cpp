@@ -132,12 +132,13 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
     this->cancel_timer(lasttimerID);
     lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
     const std::filesystem::path tmp = filepath;
-    std::thread mpvworkaround([this,tmp]{
+    const auto vol = volume_slider.values()->at("value");
+    std::thread mpvworkaround([this,tmp,vol]{
         std::this_thread::sleep_for(100ms);
         if(!music_player.is_active())
         {
             std::cout << "No active voice count. Maybe the file is unsopported?\nFallback to mpv:" << std::endl;
-            std::system(("mpv " + GempyreUtils::qq(tmp.string()) + " --no-video &").c_str());
+            std::system(("mpv " + GempyreUtils::qq(tmp.string()) + " --no-video --volume="+vol+" &").c_str());
             //songnameinoverview.set_style("color", "#ffd7ba");
         }
         else {
