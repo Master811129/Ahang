@@ -85,7 +85,7 @@ void mywindow::onopenbuttonclicked()
                 songs.emplace_back(nullptr,tagreader(entry.path()),entry.path());//element - tag class - path
             }
         }
-        std::sort(songs.begin(),songs.end(),[](auto& p,auto& s){
+        std::ranges::sort(songs,[](auto& p,auto& s){
             return std::filesystem::last_write_time(std::get<2>(p))>std::filesystem::last_write_time(std::get<2>(s));
         });
         //TODO sort by other values;
@@ -115,7 +115,7 @@ void mywindow::onopenbuttonclicked()
         }
         
         auto stop =  std::chrono::high_resolution_clock::now();
-        std::cout << "indexed in: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop-start) << std::endl;
+        std::cout << "indexed in: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop-start).count() << "ms" << std::endl;
         songs.emplace_back(std::make_shared<Gempyre::Element>(*this,"div",songlist),"","");//space at the end of the list
         std::get<0>(songs[songs.size()-1])->set_attribute("class","lastspace");
     }

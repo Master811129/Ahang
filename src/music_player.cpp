@@ -1,10 +1,10 @@
 #include "music_player.hpp"
-#include  <iostream>
+#include <iostream>
 MusicPlayer::MusicPlayer()
 {
-    std::cout << "initializing Soload\n";
+    std::cout << "initializing Soload\r" << std::flush;
     engine.init();
-    std::cout << "done" << std::endl;
+    std::cout << "Soload initialized✅ " <<  std::endl;
 }
 
 MusicPlayer::~MusicPlayer()
