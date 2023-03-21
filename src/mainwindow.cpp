@@ -23,6 +23,7 @@
 
 mywindow::mywindow(const Filemap f,const std::string &index,const std::string &title,const int& width, const int& height):
 Gempyre::Ui(f,index,title,width,height),
+//Gempyre::Ui(f,index,"","debug=True"),
 //Gempyre::Ui(f,index,"python simpleweb.py ",""),//fake constructor for debug purposes
 //Gempyre::Ui(f,index,"xdg-open ",""),//fake constructor for debug purposes
 //Gempyre::Ui(f,index,"librewolf ",""),//fake constructor for debug purposes
@@ -65,7 +66,6 @@ playerbar(*this,"playerbar")
     this->on_exit([]{
         std::system("killall mpv > /dev/null");
     });
-    this->after(1000ms,[]{Gempyre::set_debug(false);});
 }
 
 
