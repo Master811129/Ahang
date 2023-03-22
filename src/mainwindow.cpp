@@ -18,13 +18,15 @@
 #include <fstream>
 #include <tuple>
 #include <vector>
-
+//#define ahang_debug
 #define scale_smaller "scale(0.9)"
 
 mywindow::mywindow(const Filemap f,const std::string &index,const std::string &title,const int& width, const int& height):
+#ifndef ahang_debug
 Gempyre::Ui(f,index,title,width,height),
-//Gempyre::Ui(f,index,"","debug=True"),
-//Gempyre::Ui(f,index,"python simpleweb.py ",""),//fake constructor for debug purposes
+ #else
+Gempyre::Ui(f,index,"","debug=True"),
+#endif
 //Gempyre::Ui(f,index,"xdg-open ",""),//fake constructor for debug purposes
 //Gempyre::Ui(f,index,"librewolf ",""),//fake constructor for debug purposes
 songlist(*this, "songlist"),
@@ -43,16 +45,15 @@ playerbar(*this,"playerbar")
 {
     debuginfo_button.set_style("position", "fixed");
 
-    if (GempyreUtils::log_level()>=GempyreUtils::LogLevel::Debug)
-    {
+    #ifdef ahang_debug
         debuginfo_button.set_html("D");
         debuginfo_button.subscribe("click", std::bind(&mywindow::on_dbginfoclicked,this,std::placeholders::_1));
         debuginfo_button.set_style("right", "10px");
         debuginfo_button.set_style("top", "10px");
         debuginfo_button.set_style("font-size", "1.5rem");
-    }
-    else debuginfo_button.set_style("display", "none");
-
+    #else 
+        debuginfo_button.set_style("display", "none");
+    #endif
     stop_button.set_html(" <img src='/stop.png' style='width:32px;height:32px'>");
     play_button.set_html(" <img src='/play.png' style='width:32px;height:32px'>");
     open_button.set_html(" <img src='/open.png' style='width:32px;height:32px'>");

@@ -3,8 +3,8 @@
 MusicPlayer::MusicPlayer()
 {
     std::cout << "initializing Soload\r" << std::flush;
-    engine.init();
-    std::cout << "Soload initialized✅ " <<  std::endl;
+    auto result_init = engine.init();
+    std::cout << "✅Soload initialized with code: "<< result_init <<  std::endl;
 }
 
 MusicPlayer::~MusicPlayer()
