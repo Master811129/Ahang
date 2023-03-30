@@ -25,11 +25,14 @@ find_library(TAGLIB taglib)
 file(GLOB_RECURSE AUDIOSOURCE ${CMAKE_CURRENT_LIST_DIR}/soloud/src/audiosource/*.c*)
 file(GLOB_RECURSE CORE ${CMAKE_CURRENT_LIST_DIR}/soloud/src/core/*.c*)
 file(GLOB_RECURSE FILTER ${CMAKE_CURRENT_LIST_DIR}/soloud/src/filter/*.c*)
-file(GLOB_RECURSE BACKEND ${CMAKE_CURRENT_LIST_DIR}/soloud/src/backend/sdl/*.c*)
+if(UNIX)
+    file(GLOB_RECURSE BACKEND ${CMAKE_CURRENT_LIST_DIR}/soloud/src/backend/sdl/*.c*)
+    add_compile_definitions(WITH_SDL2)
+endif(UNIX)
 
-#add_compile_definitions(WITH_MINIAUDIO) #You can hear clip sound in Linux
-add_compile_definitions(WITH_SDL2)
-
+if(WIN32)
+    add_compile_definitions(WITH_MINIAUDIO) #You can hear clip sound in Linux
+endif(WIN32)
 
 set(SOLOUD_SRCS 
     soloud/src/backend/miniaudio/soloud_miniaudio.cpp
