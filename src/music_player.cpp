@@ -15,7 +15,7 @@ MusicPlayer::~MusicPlayer()
 void MusicPlayer::play(const std::filesystem::path &music_path)
 {
     engine.stopAll();
-    stream.load(music_path.c_str());
+    stream.load(music_path.string().c_str());
     this->play();
 }
 void MusicPlayer::play()
