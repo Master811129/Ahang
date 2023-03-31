@@ -18,8 +18,10 @@ include(FetchContent)
 find_package(gempyre REQUIRED)
 include(gempyre)
 include_directories(include)
-find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
+if(UNIX)
+    find_package(SDL2 REQUIRED)
+    include_directories(${SDL2_INCLUDE_DIRS})
+endif(UNIX)
 find_library(TAGLIB taglib)
 
 file(GLOB_RECURSE AUDIOSOURCE ${CMAKE_CURRENT_LIST_DIR}/soloud/src/audiosource/*.c*)
@@ -44,7 +46,13 @@ set(SOLOUD_SRCS
 )
 add_executable(${PROJECT_NAME} src/main.cpp src/mainwindow.cpp src/mainwindow.hpp src/music_player.cpp src/music_player.hpp src/tagreader.hpp src/tagreader.cpp ${resource_files} ${SOLOUD_SRCS} )
 target_include_directories(${PROJECT_NAME} PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/soloud/include)
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} tag dl)
+if(UNIX)
+    target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} tag dl)
+endif(UNIX)
+
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} tag)
+endif(WIN32)
 
 gempyre_add_resources(PROJECT ${PROJECT_NAME} TARGET include/resources.h SOURCES ${resource_files})
 target_link_libraries (   ${PROJECT_NAME} 

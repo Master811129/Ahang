@@ -47,7 +47,7 @@ playerbar(*this,"playerbar")
 
     #ifdef ahang_debug
         debuginfo_button.set_html("D");
-        debuginfo_button.subscribe("click", std::bind(&mywindow::on_dbginfoclicked,this,std::placeholders::_1));
+        debuginfo_button.subscribe("click", std::bind(&mywindow::on_dbginfoclicked,this));
         debuginfo_button.set_style("right", "10px");
         debuginfo_button.set_style("top", "10px");
         debuginfo_button.set_style("font-size", "1.5rem");
@@ -273,7 +273,7 @@ void mywindow::toggledark(bool is_dark)
     
 }
 
-void mywindow::on_dbginfoclicked(const Gempyre::Event &e)//hidden button
+void mywindow::on_dbginfoclicked()//hidden button
 {
     const auto [first_gem_ver,second_gem_ver,third_gem_ver] = Gempyre::version();
     std::cout << "-------------🚧DEBUG INFO🚧-------------" <<

@@ -58,7 +58,7 @@ m_pic_size(0)
     else if(extension==".mkv"|extension==".avi"|extension==".wmv");//this will avoid opening those file thus improve performance
     else //this will get tag info from file automatically but wont get the photo unfortunately.
     {
-        TagLib::FileRef autofile (path.c_str());
+        TagLib::FileRef autofile (path.string().c_str());
         auto tag=autofile.tag();
         if(tag)
         {
@@ -69,16 +69,16 @@ m_pic_size(0)
 
     if(m_title.empty())//if the music didnt have a tag at all, then I will handle this myself using the filenames.
     {
-        m_title=path.filename();
-        auto pos = std::min(m_title.find('-'),std::min(m_title.find('.'),m_title.find("—")));
+        m_title=path.filename().string();
+        if(!m_title.empty()) m_title.erase(m_title.size() - path.extension().string().size());//remove extension
+        auto pos = std::min(m_title.find('-'),m_title.find("—"));
         if(pos != std::string::npos)m_title.erase(pos);
     }
-    //now lets block ads
+    //now lets block ads with modern CPP
     std::regex adblock = std::regex("(www\\.|https://|http://)?(\\S|-)*(\\.((com)|(io)|(org)|(xyz)|(ir)|(in)|(nl)))",std::regex_constants::icase);
     m_title=std::regex_replace(m_title,adblock,"");
     m_artist=std::regex_replace(m_artist,adblock,"");
-    //rats! some mfs just put their website names as a title this will make a title with a bunch of whitespaces
-    if(m_title.find_first_not_of(" \t")==std::string::npos)m_title.clear();//if we didn't find anything exept whitespaces
+    if(m_title.find_first_not_of(" \t")==std::string::npos)m_title.clear();//if the name of the site was just ads & adblocker removed everything we endup having whitespaces.
 }
 std::string tagreader::title () const
 {

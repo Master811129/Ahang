@@ -14,11 +14,11 @@ public Gempyre::Ui
 {
     public:
     mywindow(const Gempyre::Ui::Filemap,const std::string&, const std::string&,const int&,const int&);
-    Gempyre::Element coverartinoverview;
-    Gempyre::Element bgblur;
     private:
-    
     std::vector<std::tuple<std::shared_ptr<Gempyre::Element>, tagreader,std::filesystem::path>> songs;
+    Gempyre::Element coverartinoverview;
+    Gempyre::Element songnameinoverview;
+    Gempyre::Element bgblur;
     Gempyre::Element songlist;
     Gempyre::Element open_button;
     Gempyre::Element stop_button;
@@ -26,11 +26,9 @@ public Gempyre::Ui
     Gempyre::Element volume_slider;
     Gempyre::Element lightdark_button;
 
-    Gempyre::Element songnameinoverview;
-    Gempyre::Element debuginfo_button;//I make this dinamically in cpp file
+    Gempyre::Element debuginfo_button;//I make and style this in cpp file
     Gempyre::Element seeker;//that widget that seeks through the song
     Gempyre::Element playerbar;//I only add this for change its appearance
-    //Gempyre::Element songoverview;
 
     MusicPlayer music_player;
 
@@ -38,7 +36,7 @@ public Gempyre::Ui
     void ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element>,tagreader,std::filesystem::path>&);
     void onstopclicked();
     void onplaypause_clicked();
-    void on_dbginfoclicked(const Gempyre::Event &clickedsong);
+    void on_dbginfoclicked();
     void update_seeker_pos (Gempyre::Ui::TimerId id);
     void onvolumesliderchanged (const Gempyre::Event& slider_ref);
     void ondarklightbtn_clicked(const Gempyre::Event& e);
