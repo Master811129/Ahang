@@ -4,7 +4,9 @@ MusicPlayer::MusicPlayer()
 {
     std::cout << "initializing Soload\r" << std::flush;
     auto result_init = engine.init();
-    std::cout << "✅Soload initialized with code: "<< result_init <<  std::endl;
+    std::cout << "✅Soload initialized with code: "<< result_init;
+    if(result_init==0)std::cout << " | Backed: " << engine.getBackendString() << std::endl;
+    else std::cout << std::endl;
 }
 
 MusicPlayer::~MusicPlayer()
