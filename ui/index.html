@@ -25,22 +25,24 @@
             
             <img id="coverartinoverview" src="song.png" draggable="false" alt="">
             <div><h1 id="songnameinoverview">Ahang</h1></div>
+            <div class="playerbar">
+                <div class="leftside">
+                    <input type="range" class="seeker" name="seeker" id="seeker" min="0" max="100" step="0.01" value="0">
+                </div>
+                <div class="middle" >
+                    <button class="flatbutton" id="playbutton"><img src='play.png'></button>
+                    <button class="flatbutton" id="stopbutton"><img src='stop.png'></button>
+                    <button id="open" class="flatbutton"><img src='open.png'></button>
+                    <input type="checkbox" id="lightdark" checked="true" class="flatbutton">
+                </div>
+                <div class="rightside">
+                    <input type="range" name="vol" id="vol" class="vol">
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="playerbar" id="playerbar">
-        <div class="leftside">
-            <button id="open" class="flatbutton">📁</button>
-            <input type="checkbox" id="lightdark" checked="true" class="flatbutton">
-        </div>
-        <div class="middle">
-            <button class="flatbutton" id="playbutton">▶️</button>
-            <button class="flatbutton" id="stopbutton">⏹️</button>
-        </div>
-        <div class="rightside">
-            <input type="range" class="seeker" name="seeker" id="seeker" min="0" max="100" step="0.01" value="0">
-            <input type="range" name="vol" id="vol" class="vol" value="100">
-    </div>
-    </div>
+
+    
 </body>
 </html>
