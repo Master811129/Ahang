@@ -1,5 +1,5 @@
 #pragma once
-#include "soloud_wavstream.h"
+#include "soloud_wav.h"
 #include <soloud.h>
 #include <string>
 #include <filesystem>
@@ -24,6 +24,6 @@ class MusicPlayer
 
     private:
     SoLoud::Soloud engine;
-    SoLoud::WavStream stream;
+    SoLoud::Wav stream;
     std::optional<int> stream_handle;
 };

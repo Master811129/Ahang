@@ -1,6 +1,7 @@
 #include "music_player.hpp"
 #include <iostream>
-MusicPlayer::MusicPlayer()
+MusicPlayer::MusicPlayer():
+stream_handle({})
 {
     std::cout << "initializing Soload\r" << std::flush;
     auto result_init = engine.init();
@@ -20,9 +21,10 @@ void MusicPlayer::play(const std::filesystem::path &music_path)
     stream.load(music_path.string().c_str());
     this->play();
 }
+
 void MusicPlayer::play()
 {
-    if(stream.mFilename==nullptr)return;
+    //if(stream.mFilename==nullptr)return;
     engine.stopAll();
     stream_handle = engine.play(stream);
 }
@@ -72,7 +74,8 @@ float MusicPlayer::get_position()
 
 void MusicPlayer::seek(float precent_value)
 {
-    //TODO
+    if(!stream_handle)return;;
+    engine.seek(stream_handle.value(), stream.getLength() * (precent_value*0.01));
 }
 
 void MusicPlayer::set_volume(float vol_precent)

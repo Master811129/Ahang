@@ -38,6 +38,7 @@ public Gempyre::Ui
     void onplaypause_clicked();
     void on_dbginfoclicked();
     void update_seeker_pos (Gempyre::Ui::TimerId id);
+    void onuserchangedseeker (const Gempyre::Event&);
     void onvolumesliderchanged (const Gempyre::Event& slider_ref);
     void ondarklightbtn_clicked(const Gempyre::Event& e);
     void toggledark(bool dark);

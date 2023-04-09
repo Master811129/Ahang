@@ -61,12 +61,10 @@ playerbar(*this,"playerbar")
     open_button.subscribe("click", std::bind(&mywindow::onopenbuttonclicked,this));
     stop_button.subscribe("click", std::bind(&mywindow::onstopclicked,this));
     play_button.subscribe("click", std::bind(&mywindow::onplaypause_clicked,this));
-    volume_slider.subscribe("change", std::bind(&mywindow::onvolumesliderchanged,this,std::placeholders::_1));
+    volume_slider.subscribe("input", std::bind(&mywindow::onvolumesliderchanged,this,std::placeholders::_1));
     lightdark_button.subscribe("click", std::bind(&mywindow::ondarklightbtn_clicked,this,std::placeholders::_1));
-
-    this->on_exit([]{
-        std::system("killall mpv > /dev/null");
-    });
+    seeker.subscribe("input", std::bind(&mywindow::onuserchangedseeker,this,std::placeholders::_1));
+    this->on_exit(std::bind(&std::system,"killall mpv > /dev/null"));
 }
 
 
@@ -197,6 +195,11 @@ void mywindow::update_seeker_pos(Gempyre::Ui::TimerId id)
     }
 }
 
+void mywindow::onuserchangedseeker(const Gempyre::Event & s)
+{
+    music_player.seek( std::stoi(s.element.values()->at("value")));
+}
+
 
 void mywindow::onvolumesliderchanged(const Gempyre::Event& slider_ref)
 {
@@ -216,14 +219,14 @@ void mywindow::toggledark(bool is_dark)
         if(is_dark)stock_coverart="song.png";
         else stock_coverart="song-light.png";
         //element attr light dark
-        std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,12> lightcolorscheme{{
+        std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,10> lightcolorscheme{{
             {body,"color-scheme","light","dark"}, //Chromium does not respect user prefrence so I do.
             {body,"background","#d5d5d5",""},
             {body,"color","hsl(0deg, 0%, 21%)",""},
             {songlist,"background", "#eaeaeaa3",""},
             {bgblur,"filter","blur(40px) opacity(0.8)",""},
-            {playerbar,"background","#efefef",""},
-            {playerbar,"border-top-color","#2626263b",""},
+            //{playerbar,"background","#efefef",""},
+            //{playerbar,"border-top-color","#2626263b",""},
             {play_button,"filter","invert(1)","invert(0)"},
             {stop_button,"filter","invert(1)","invert(0)"},
             {open_button,"filter","invert(1)","invert(0)"},
