@@ -10,13 +10,14 @@ bool ahang::is_blacklistformat(const std::filesystem::path &extension) noexcept
         ".jpg",".JPG",".jpeg",
         ".gif",
         ".svg",
-        //config files
+        //config/system files
         ".conf",
         ".ini",
         ".inf",
+        ".db",
         //archive files
         ".zip",
-        ".gz"
+        ".gz",
         ".rar",
         ".exe",
         //doc files
