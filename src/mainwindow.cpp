@@ -2,6 +2,7 @@
 #include "gempyre.h"
 #include "music_player.hpp"
 #include "tagreader.hpp"
+#include "blacklistformats.hpp"
 #include <algorithm>
 #include <array>
 #include <bits/chrono.h>
@@ -79,7 +80,8 @@ void mywindow::onopenbuttonclicked()
         auto start = std::chrono::high_resolution_clock::now();
         for(const auto &entry : std::filesystem::directory_iterator(dir))
         {
-            if(entry.is_regular_file() && (entry.path().filename().string()[0]!='.')) //if file is not a dir and not hidden
+            if(entry.is_regular_file() && (entry.path().filename().string()[0]!='.') && !ahang::is_blacklistformat(entry.path().extension())) 
+            //if file is not a dir and not hidden and not blacklisted as non playable
             {
                 songs.emplace_back(nullptr,tagreader(entry.path()),entry.path());//element - tag class - path
             }
@@ -90,8 +92,8 @@ void mywindow::onopenbuttonclicked()
         //TODO sort by other values;
         for(auto &song:songs)
         {
-            //Passing by reference is important because we want to make a shared pointer. 
-            //if we copy then make-shared, the pointer will be destroyed after we quit the scope.
+            //auto& below: Passing by reference is very important because we want to make a shared pointer. 
+            //if we copy then make_shared, the pointer will be destroyed after we quit the scope.
             auto& [element,tag,filepath] = song;
             element=std::make_shared<Gempyre::Element>(*this,"div",songlist);
             element->set_attribute("class","song");
