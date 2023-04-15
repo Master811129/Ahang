@@ -16,6 +16,7 @@ public Gempyre::Ui
     mywindow(const Gempyre::Ui::Filemap,const std::string&, const std::string&,const int&,const int&);
     private:
     std::vector<std::tuple<std::shared_ptr<Gempyre::Element>, tagreader,std::filesystem::path>> songs;
+    Gempyre::Element overviewcontainer;
     Gempyre::Element coverartinoverview;
     Gempyre::Element songnameinoverview;
     Gempyre::Element bgblur;

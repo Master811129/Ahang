@@ -20,7 +20,7 @@
 #include <tuple>
 #include <vector>
 //#define ahang_debug
-#define scale_smaller "scale(0.9)"
+constexpr const std::string scale_smaller = "scale(0.85)";
 
 mywindow::mywindow(const Filemap f,const std::string &index,const std::string &title,const int& width, const int& height):
 #ifndef ahang_debug
@@ -38,6 +38,7 @@ play_button(*this,"playbutton"),
 lightdark_button(*this,"lightdark"),
 volume_slider(*this,"vol"),
 seeker(*this,"seeker"),
+overviewcontainer(*this,"songoverview"),
 songnameinoverview(*this,"songnameinoverview"),
 coverartinoverview(*this,"coverartinoverview"),
 debuginfo_button(*this,"button",this->root()),
@@ -221,18 +222,17 @@ void mywindow::toggledark(bool is_dark)
         if(is_dark)stock_coverart="song.png";
         else stock_coverart="song-light.png";
         //element attr light dark
-        std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,10> lightcolorscheme{{
+        std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,11> lightcolorscheme{{
             {body,"color-scheme","light","dark"}, //Chromium does not respect user prefrence so I do.
             {body,"background","#d5d5d5",""},
             {body,"color","hsl(0deg, 0%, 21%)",""},
             {songlist,"background", "#eaeaeaa3",""},
             {bgblur,"filter","blur(40px) opacity(0.8)",""},
-            //{playerbar,"background","#efefef",""},
-            //{playerbar,"border-top-color","#2626263b",""},
             {play_button,"filter","invert(1)","invert(0)"},
             {stop_button,"filter","invert(1)","invert(0)"},
             {open_button,"filter","invert(1)","invert(0)"},
             {lightdark_button, "filter","invert(1)","invert(0)"},
+            {overviewcontainer,"background", "#eaeaeaa3",""},
             {coverartinoverview, "border", "1px solid #999999",""}
         }};
         for(const auto& scheme:lightcolorscheme)
