@@ -9,8 +9,8 @@ Ahang is yet another simple and minimalistic music player like G4Music and Amber
 
 ## ویژگی ها
 - یک ادبلاکر ساده که نام وبسایت ها رو از روی عنوان موسیقی پنهان می کنه.
-- Non Gstreamer: unlike literally almost Every music player in the linux world. this software is not using Gstreamer instead It uses [Soloud](solhsa.com) as its engine.
-- تغییر پذیر: یعنی میشه ازش توی سکو های مختلف استفاده کرد.
+- بدون جی استریمر: برخلاف تقریبا تمام پخش کننده ها توی لینوکس که از جی استریمر استفاده میکنن این پروژه از [Soloud](solhsa.com) استفاده میکنه.
+- تغییر پذیر: یعنی میشه ازش توی دستگاه های مختلف (گوشی و تلبت و...) مختلف استفاده کرد.
 - چند سکویی: میشه ازش توی پلت فرم های مختلف استفاده کرد (فعلا لینوکس.)
 - زمینه ی مات
 
@@ -36,3 +36,14 @@ Ahang is yet another simple and minimalistic music player like G4Music and Amber
 - پس زمینه ی روز و شب، همزمان با توجه به تنظیمات سیستم عامل
 - پشتیبانی از فلت پک
 - پشتیبانی از اسنپ
+
+## حمایت
+مونرو:
+
+47ME2ogosZGNJV89SaBPiSNkqExVwbpK5UBb7Kp73WXmgJxXsQdniGtBD5VRf48rZH6UksNCntRoP6XvHGeW1mBs1rFW7s1
+
+اتریوم:
+
+0xd8F3200BF4728D77E2F26448caE97c8e132e71C1
+
+سپاس
