@@ -5,7 +5,6 @@
 #include "blacklistformats.hpp"
 #include <algorithm>
 #include <array>
-#include <bits/chrono.h>
 #include <chrono>
 #include <cstdlib>
 #include <gempyre_client.h>
@@ -67,6 +66,7 @@ playerbar(*this,"playerbar")
     lightdark_button.subscribe("click", std::bind(&mywindow::ondarklightbtn_clicked,this,std::placeholders::_1));
     seeker.subscribe("input", std::bind(&mywindow::onuserchangedseeker,this,std::placeholders::_1));
     this->on_exit(std::bind(&std::system,"killall mpv > /dev/null"));
+    music_player.set_volume(50);
 }
 
 
@@ -283,7 +283,9 @@ void mywindow::on_dbginfoclicked()//hidden button
     const auto [first_gem_ver,second_gem_ver,third_gem_ver] = Gempyre::version();
     std::cout << "-------------🚧DEBUG INFO🚧-------------" <<
     "\nGempyre version: " << first_gem_ver << '.' << second_gem_ver << '.' <<third_gem_ver <<
+    "\nSoloud Version: " << music_player.pass_engine()->getVersion() <<
     "\nNumber of indexed files: " << (songs.size()==0?songs.size(): songs.size()-1)  <<
+    "\nVolume from MusicPlayer class: " << music_player.pass_engine()->getGlobalVolume() << 
     "\nstream position: " << music_player.get_position() << '%' <<
     "\nis there any active stream? " << (music_player.is_active()?"yes":"no") <<
     "\nis stream paused? " << (music_player.is_paused()?"yes":"no") <<

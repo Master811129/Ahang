@@ -1,5 +1,8 @@
 #include "music_player.hpp"
 #include <iostream>
+#include <soloud.h>
+
+
 MusicPlayer::MusicPlayer():
 stream_handle({})
 {
@@ -81,4 +84,9 @@ void MusicPlayer::seek(float precent_value)
 void MusicPlayer::set_volume(float vol_precent)
 {
     engine.setGlobalVolume(vol_precent/100);
+}
+
+const SoLoud::Soloud* MusicPlayer::pass_engine () 
+{
+    return &engine;
 }
