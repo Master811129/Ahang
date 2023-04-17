@@ -52,7 +52,7 @@ endif(UNIX)
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} tag)
-    target_link_options(simple PRIVATE -mwindows)
+    target_link_options(${PROJECT_NAME} PRIVATE -mwindows)
 endif(WIN32)
 
 gempyre_add_resources(PROJECT ${PROJECT_NAME} TARGET include/resources.h SOURCES ${resource_files})
