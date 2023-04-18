@@ -100,14 +100,6 @@ h1{
    display: flex;
 }
 
-.playerbar .leftside button,
-.playerbar .leftside input{
-    margin-top: 3.5%;
-    margin-left: 3%;
-    width: 2rem;
-    height: 2rem;
-}
-
 
 #lightdark::after{
     content: "";
@@ -187,9 +179,22 @@ h1{
     border-radius: 8%;
     -webkit-user-drag: none;
     transition: ease 440ms;
-    transform: scale(0.9);/*this will change in the application when you play it gets bigger*/
+    transform: scale(0.88);/*size changes is implemented in C++ files. This value will change to one when file is playing*/
 }
-
+@keyframes loading {
+    0%{
+        text-shadow: 0px 0px 8px;
+    }   
+    100%{
+        text-shadow: 0px 0px 0px;
+    } 
+}
+.loading-animation{
+    animation-name: loading;
+    animation-duration: 500ms;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
 
 .songlist{
     display: block;

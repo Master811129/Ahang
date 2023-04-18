@@ -10,16 +10,18 @@
 #include <gempyre_client.h>
 #include <filesystem>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <gempyre_utils.h>
 #include <thread>
 #include <fstream>
 #include <tuple>
 #include <vector>
-//#define ahang_debug
-constexpr const std::string scale_smaller = "scale(0.85)";
+// #define ahang_debug
+constexpr const std::string scale_smaller = "scale(0.88)";
 
 mywindow::mywindow(const Filemap f,const std::string &index,const std::string &title,const int& width, const int& height):
 #ifndef ahang_debug
@@ -58,14 +60,12 @@ playerbar(*this,"playerbar")
     stop_button.set_html(" <img src='/stop.png' style='width:32px;height:32px'>");
     play_button.set_html(" <img src='/play.png' style='width:32px;height:32px'>");
     open_button.set_html(" <img src='/open.png' style='width:32px;height:32px'>");
-
     open_button.subscribe("click", std::bind(&mywindow::onopenbuttonclicked,this));
     stop_button.subscribe("click", std::bind(&mywindow::onstopclicked,this));
     play_button.subscribe("click", std::bind(&mywindow::onplaypause_clicked,this));
     volume_slider.subscribe("input", std::bind(&mywindow::onvolumesliderchanged,this,std::placeholders::_1));
     lightdark_button.subscribe("click", std::bind(&mywindow::ondarklightbtn_clicked,this,std::placeholders::_1));
     seeker.subscribe("input", std::bind(&mywindow::onuserchangedseeker,this,std::placeholders::_1));
-    this->on_exit(std::bind(&std::system,"killall mpv > /dev/null"));
     music_player.set_volume(50);
 }
 
@@ -127,27 +127,37 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
 {
     auto&[element,tag,filepath] = song;
     static int lasttimerID =  0;
-    
-    std::system("killall mpv > /dev/null");
-    
     music_player.play(filepath);//it cancels the previous song automatically if playing
     this->cancel_timer(lasttimerID);
     lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
     const std::filesystem::path tmp = filepath;
     const auto vol = volume_slider.values()->at("value");
-    std::thread mpvworkaround([this,tmp,vol]{
+    std::thread opusworkaround([this,tmp]{
         std::this_thread::sleep_for(100ms);
         if(!music_player.is_active())
         {
-            std::cout << "No active voice count. Maybe the file is unsopported?\nFallback to mpv:" << std::endl;
-            std::system(("mpv " + GempyreUtils::qq(tmp.string()) + " --no-video --volume="+vol+" &").c_str());
-            //songnameinoverview.set_style("color", "#ffd7ba");
+            if (tmp.extension()==".opus")
+            {
+                songnameinoverview.set_attribute("class","loading-animation");
+                std::stringstream t ;
+                t << std::quoted(tmp.string());
+                if(std::filesystem::exists("/tmp/ahang.mp3"))std::filesystem::remove("/tmp/ahang.mp3");
+                auto convert_to_opus_cmd = "ffmpeg -i "+ t.str() +" -acodec mp3 /tmp/ahang.mp3";
+                std::system(convert_to_opus_cmd.c_str());
+                music_player.play("/tmp/ahang.mp3");
+                lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
+                coverartinoverview.set_style("transform", "scale(1)");
+                
+            }
         }
-        else {
+        else 
+        {
             coverartinoverview.set_style("transform", "scale(1)");// I dont think this is safe
         }
+        songnameinoverview.set_attribute("class","");
     });
-    mpvworkaround.detach();
+
+    opusworkaround.detach();
     //this will get the title from DOM (user interface) sorry if its convoluted :>
     auto title = element->children().value()[1].children().value()[0].html().value();
     songnameinoverview.set_html(title);
@@ -167,7 +177,6 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
 void mywindow::onstopclicked(void)
 {
     music_player.stop();
-    std::system("killall mpv");
     seeker.set_attribute("value","0");
     coverartinoverview.set_style("transform", scale_smaller);
 }
@@ -184,7 +193,6 @@ void mywindow::onplaypause_clicked()
         music_player.play();
         this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
     }
-    
 }
 
 void mywindow::update_seeker_pos(Gempyre::Ui::TimerId id)
@@ -214,6 +222,7 @@ void mywindow::ondarklightbtn_clicked(const Gempyre::Event& e)
 {
     this->toggledark(e.element.values()->at("checked")=="true");
 }
+
 void mywindow::toggledark(bool is_dark)
 {
     try{
@@ -228,10 +237,10 @@ void mywindow::toggledark(bool is_dark)
             {body,"color","hsl(0deg, 0%, 21%)",""},
             {songlist,"background", "#eaeaeaa3",""},
             {bgblur,"filter","blur(40px) opacity(0.8)",""},
-            {play_button,"filter","invert(1)","invert(0)"},
-            {stop_button,"filter","invert(1)","invert(0)"},
-            {open_button,"filter","invert(1)","invert(0)"},
-            {lightdark_button, "filter","invert(1)","invert(0)"},
+            {play_button,"filter","invert(1)",""},
+            {stop_button,"filter","invert(1)",""},
+            {open_button,"filter","invert(1)",""},
+            {lightdark_button, "filter","invert(1)",""},
             {overviewcontainer,"background", "#eaeaeaa3",""},
             {coverartinoverview, "border", "1px solid #999999",""}
         }};
