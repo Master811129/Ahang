@@ -130,19 +130,19 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
     music_player.play(filepath);//it cancels the previous song automatically if playing
     this->cancel_timer(lasttimerID);
     lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
-    const std::filesystem::path tmp = filepath;
-    const auto vol = volume_slider.values()->at("value");
-    std::thread opusworkaround([this,tmp]{
+    const std::filesystem::path filepath_cpy = filepath;
+    std::thread opusworkaround([this,filepath_cpy]{
         std::this_thread::sleep_for(100ms);
         if(!music_player.is_active())
         {
-            if (tmp.extension()==".opus")
+            if (filepath_cpy.extension()==".opus")
             {
                 songnameinoverview.set_attribute("class","loading-animation");
                 std::stringstream t ;
-                t << std::quoted(tmp.string());
-                if(std::filesystem::exists("/tmp/ahang.mp3"))std::filesystem::remove("/tmp/ahang.mp3");
-                auto convert_to_opus_cmd = "ffmpeg -i "+ t.str() +" -acodec mp3 /tmp/ahang.mp3";
+                t << std::quoted(filepath_cpy.string());
+                const auto tmp = std::filesystem::temp_directory_path();
+                if(std::filesystem::exists(tmp/"ahang.mp3"))std::filesystem::remove(tmp/"ahang.mp3");
+                auto convert_to_opus_cmd = "ffmpeg -i "+ t.str() +" -acodec mp3 " + (tmp/"ahang.mp3").string();
                 std::system(convert_to_opus_cmd.c_str());
                 music_player.play("/tmp/ahang.mp3");
                 lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
