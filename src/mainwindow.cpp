@@ -23,7 +23,8 @@
 // #define ahang_debug
 constexpr const std::string scale_smaller = "scale(0.88)";
 
-mywindow::mywindow(const Filemap f,const std::string &index,const std::string &title,const int& width, const int& height):
+mywindow::mywindow(const Filemap& f,const std::string &index,const std::string &title,const int width, const int height):
+About(f,"about.html","About",500,240,Gempyre::Ui::NoResize),
 #ifndef ahang_debug
 Gempyre::Ui(f,index,title,width,height),
  #else
@@ -44,7 +45,8 @@ songnameinoverview(*this,"songnameinoverview"),
 coverartinoverview(*this,"coverartinoverview"),
 debuginfo_button(*this,"button",this->root()),
 stock_coverart("song.png"),
-playerbar(*this,"playerbar")
+playerbar(*this,"playerbar"),
+about_button(*this,"aboutbutton")
 {
     debuginfo_button.set_style("position", "fixed");
 
@@ -57,15 +59,13 @@ playerbar(*this,"playerbar")
     #else 
         debuginfo_button.set_style("display", "none");
     #endif
-    stop_button.set_html(" <img src='/stop.png' style='width:32px;height:32px'>");
-    play_button.set_html(" <img src='/play.png' style='width:32px;height:32px'>");
-    open_button.set_html(" <img src='/open.png' style='width:32px;height:32px'>");
     open_button.subscribe("click", std::bind(&mywindow::onopenbuttonclicked,this));
     stop_button.subscribe("click", std::bind(&mywindow::onstopclicked,this));
     play_button.subscribe("click", std::bind(&mywindow::onplaypause_clicked,this));
     volume_slider.subscribe("input", std::bind(&mywindow::onvolumesliderchanged,this,std::placeholders::_1));
     lightdark_button.subscribe("click", std::bind(&mywindow::ondarklightbtn_clicked,this,std::placeholders::_1));
     seeker.subscribe("input", std::bind(&mywindow::onuserchangedseeker,this,std::placeholders::_1));
+    about_button.subscribe("click", std::bind(&Gempyre::Ui::run,&About));
     music_player.set_volume(50);
 }
 
@@ -231,7 +231,7 @@ void mywindow::toggledark(bool is_dark)
         if(is_dark)stock_coverart="song.png";
         else stock_coverart="song-light.png";
         //element attr light dark
-        std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,11> lightcolorscheme{{
+        std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,12> lightcolorscheme{{
             {body,"color-scheme","light","dark"}, //Chromium does not respect user prefrence so I do.
             {body,"background","#d5d5d5",""},
             {body,"color","hsl(0deg, 0%, 21%)",""},
@@ -241,6 +241,7 @@ void mywindow::toggledark(bool is_dark)
             {stop_button,"filter","invert(1)",""},
             {open_button,"filter","invert(1)",""},
             {lightdark_button, "filter","invert(1)",""},
+            {about_button, "filter","invert(1)",""},
             {overviewcontainer,"background", "#eaeaeaa3",""},
             {coverartinoverview, "border", "1px solid #999999",""}
         }};
@@ -286,6 +287,7 @@ void mywindow::toggledark(bool is_dark)
                        "document.documentElement.style.setProperty('--song-hvr-bg-color', '#d4d4d4');");
     
 }
+
 
 void mywindow::on_dbginfoclicked()//hidden button
 {

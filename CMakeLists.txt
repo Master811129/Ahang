@@ -12,7 +12,9 @@ ui/song-light.png
 ui/lightdark.png
 ui/play.png
 ui/stop.png
-ui/open.png)
+ui/open.png
+ui/about.html
+ui/about.png)
 
 include(FetchContent)
 find_package(gempyre REQUIRED)

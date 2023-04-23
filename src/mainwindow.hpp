@@ -13,7 +13,7 @@ class mywindow:
 public Gempyre::Ui
 {
     public:
-    mywindow(const Gempyre::Ui::Filemap,const std::string&, const std::string&,const int&,const int&);
+    mywindow(const Gempyre::Ui::Filemap&,const std::string&, const std::string&,const int,const int);
     private:
     std::vector<std::tuple<std::shared_ptr<Gempyre::Element>, tagreader,std::filesystem::path>> songs;
     Gempyre::Element overviewcontainer;
@@ -26,10 +26,12 @@ public Gempyre::Ui
     Gempyre::Element play_button;
     Gempyre::Element volume_slider;
     Gempyre::Element lightdark_button;
+    Gempyre::Element about_button;
 
     Gempyre::Element debuginfo_button;//I make and style this in cpp file
     Gempyre::Element seeker;//that widget that seeks through the song
     Gempyre::Element playerbar;//I only add this for change its appearance
+    Gempyre::Ui About;
 
     MusicPlayer music_player;
 
@@ -43,5 +45,6 @@ public Gempyre::Ui
     void onvolumesliderchanged (const Gempyre::Event& slider_ref);
     void ondarklightbtn_clicked(const Gempyre::Event& e);
     void toggledark(bool dark);
+    void on_aboutbtnclicked (void);
     std::string stock_coverart;//song.png song-light.png
 };

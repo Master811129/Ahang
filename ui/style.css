@@ -82,6 +82,10 @@ h1{
     padding: 0;
     -webkit-user-drag: none;
 }
+.flatbutton img{
+    width:32px;height:32px;
+}
+
 
 .playerbar{
     /*position: absolute;
@@ -194,6 +198,7 @@ h1{
     animation-duration: 500ms;
     animation-iteration-count: infinite;
     animation-direction: alternate;
+    animation-timing-function: ease-in-out;
 }
 
 .songlist{
