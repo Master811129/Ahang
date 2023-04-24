@@ -24,7 +24,7 @@
 constexpr const std::string scale_smaller = "scale(0.88)";
 
 mywindow::mywindow(const Filemap& f,const std::string &index,const std::string &title,const int width, const int height):
-About(f,"about.html","About",500,240,Gempyre::Ui::NoResize),
+About(f,"about.html","About",500,240,{},Gempyre::Ui::NoResize),
 #ifndef ahang_debug
 Gempyre::Ui(f,index,title,width,height),
  #else
@@ -65,7 +65,9 @@ about_button(*this,"aboutbutton")
     volume_slider.subscribe("input", std::bind(&mywindow::onvolumesliderchanged,this,std::placeholders::_1));
     lightdark_button.subscribe("click", std::bind(&mywindow::ondarklightbtn_clicked,this,std::placeholders::_1));
     seeker.subscribe("input", std::bind(&mywindow::onuserchangedseeker,this,std::placeholders::_1));
-    about_button.subscribe("click", std::bind(&Gempyre::Ui::run,&About));
+    if(GempyreUtils::current_os()!=GempyreUtils::OS::WinOs) about_button.subscribe("click",
+    std::bind(&mywindow::alert,this,"Ahang\nSimple music player.\nSource code and donation:\nhttps://github.com/master811129/ahang"));
+    else about_button.subscribe("click", std::bind(&Gempyre::Ui::run,&About));
     music_player.set_volume(50);
 }
 
