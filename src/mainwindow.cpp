@@ -65,7 +65,7 @@ about_button(*this,"aboutbutton")
     volume_slider.subscribe("input", std::bind(&mywindow::onvolumesliderchanged,this,std::placeholders::_1));
     lightdark_button.subscribe("click", std::bind(&mywindow::ondarklightbtn_clicked,this,std::placeholders::_1));
     seeker.subscribe("input", std::bind(&mywindow::onuserchangedseeker,this,std::placeholders::_1));
-    if(GempyreUtils::current_os()!=GempyreUtils::OS::WinOs) about_button.subscribe("click",
+    if(GempyreUtils::current_os()==GempyreUtils::OS::WinOs) about_button.subscribe("click",
     std::bind(&mywindow::alert,this,"Ahang\nSimple music player.\nSource code and donation:\nhttps://github.com/master811129/ahang"));
     else about_button.subscribe("click", std::bind(&Gempyre::Ui::run,&About));
     music_player.set_volume(50);
