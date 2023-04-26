@@ -24,7 +24,7 @@
 constexpr const std::string scale_smaller = "scale(0.88)";
 
 mywindow::mywindow(const Filemap& f,const std::string &index,const std::string &title,const int width, const int height):
-About(f,"about.html","About",500,240,{},Gempyre::Ui::NoResize),
+About(f,"about.html","About",500,220,Gempyre::Ui::NoResize),
 #ifndef ahang_debug
 Gempyre::Ui(f,index,title,width,height),
  #else
