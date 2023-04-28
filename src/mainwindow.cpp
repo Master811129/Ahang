@@ -2,7 +2,7 @@
 #include "gempyre.h"
 #include "music_player.hpp"
 #include "tagreader.hpp"
-#include "blacklistformats.hpp"
+#include "ahang_utils.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -145,7 +145,7 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
                 const auto tmp = std::filesystem::temp_directory_path();
                 if(std::filesystem::exists(tmp/"ahang.mp3"))std::filesystem::remove(tmp/"ahang.mp3");
                 auto convert_to_opus_cmd = "ffmpeg -i "+ t.str() +" -acodec mp3 " + (tmp/"ahang.mp3").string();
-                std::system(convert_to_opus_cmd.c_str());
+                ahang::system(convert_to_opus_cmd);
                 music_player.play(tmp/"ahang.mp3");
                 lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
                 coverartinoverview.set_style("transform", "scale(1)");

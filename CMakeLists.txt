@@ -46,7 +46,7 @@ set(SOLOUD_SRCS
     ${FILTER}
     ${BACKEND}
 )
-add_executable(${PROJECT_NAME} src/main.cpp src/mainwindow.cpp src/mainwindow.hpp src/music_player.cpp src/music_player.hpp src/tagreader.hpp src/tagreader.cpp src/blacklistformats.hpp src/blacklistformats.cpp ${resource_files} ${SOLOUD_SRCS} )
+add_executable(${PROJECT_NAME} src/main.cpp src/mainwindow.cpp src/mainwindow.hpp src/music_player.cpp src/music_player.hpp src/tagreader.hpp src/tagreader.cpp src/ahang_utils.hpp src/ahang_utils.cpp ${resource_files} ${SOLOUD_SRCS} )
 target_include_directories(${PROJECT_NAME} PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/soloud/include)
 if(UNIX)
     target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} tag dl)
