@@ -11,6 +11,7 @@
 #include <filesystem>
 #include <functional>
 #include <iomanip>
+#include <ios>
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -100,10 +101,8 @@ void mywindow::onopenbuttonclicked()
             auto& [element,tag,filepath] = song;
             element=std::make_shared<Gempyre::Element>(*this,"div",songlist);
             element->set_attribute("class","song");
-            auto title = tag.title();
-            auto artist = tag.artist();
-            if (artist.empty()) artist="Not Known";
-            if (title.empty()) title = "Not Known";
+            const auto title = tag.title();
+            const auto artist = tag.artist();
             const std::string picsrc (tag.get_pic()?
                 "data:image/png;base64, "+GempyreUtils::base64_encode(reinterpret_cast<const unsigned char*>(tag.get_pic().value()), tag.pic_size()):
                 stock_coverart
@@ -128,11 +127,11 @@ void mywindow::onopenbuttonclicked()
 void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element>,tagreader,std::filesystem::path> &song)
 {
     auto&[element,tag,filepath] = song;
+    const std::filesystem::path filepath_cpy = filepath;//for using in thread
     static int lasttimerID =  0;
-    music_player.play(filepath);//it cancels the previous song automatically if playing
+    music_player.play(filepath_cpy);//it cancels the previous song automatically if playing 
     this->cancel_timer(lasttimerID);
     lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
-    const std::filesystem::path filepath_cpy = filepath;
     std::thread opusworkaround([this,filepath_cpy]{
         std::this_thread::sleep_for(100ms);
         if(!music_player.is_active())
@@ -160,8 +159,7 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
     });
 
     opusworkaround.detach();
-    //this will get the title from DOM (user interface) sorry if its convoluted :>
-    auto title = element->children().value()[1].children().value()[0].html().value();
+    const auto title = tag.title();
     songnameinoverview.set_html(title);
     if(tag.get_pic())
     {
@@ -227,64 +225,52 @@ void mywindow::ondarklightbtn_clicked(const Gempyre::Event& e)
 
 void mywindow::toggledark(bool is_dark)
 {
-    try{
-        auto body = this->root();
-        //Deceleraing Gempyre Element and then distroying it makes the UI library crazy.
-        if(is_dark)stock_coverart="song.png";
-        else stock_coverart="song-light.png";
-        //element attr light dark
-        std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,12> lightcolorscheme{{
-            {body,"color-scheme","light","dark"}, //Chromium does not respect user prefrence so I do.
-            {body,"background","#d5d5d5",""},
-            {body,"color","hsl(0deg, 0%, 21%)",""},
-            {songlist,"background", "#eaeaeaa3",""},
-            {bgblur,"filter","blur(40px) opacity(0.8)",""},
-            {play_button,"filter","invert(1)",""},
-            {stop_button,"filter","invert(1)",""},
-            {open_button,"filter","invert(1)",""},
-            {lightdark_button, "filter","invert(1)",""},
-            {about_button, "filter","invert(1)",""},
-            {overviewcontainer,"background", "#eaeaeaa3",""},
-            {coverartinoverview, "border", "1px solid #999999",""}
-        }};
-        for(const auto& scheme:lightcolorscheme)
-        {
-            auto& [e,k,lightval,darkval] = scheme;
-            std::array<std::reference_wrapper<const std::string>,2> lightdark{{lightval,darkval}};
-            e.get().set_style(k, lightdark[is_dark]);
-        }
-    }
-    catch(...)
+    auto body = this->root();
+    //Deceleraing Gempyre Element and then distroying it makes the UI library crazy.
+    if(is_dark)stock_coverart="song.png";
+    else stock_coverart="song-light.png";
+    //element attr light dark
+    std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,12> lightcolorscheme{{
+        {body,"color-scheme","light","dark"}, //Chromium does not respect user prefrence so I do.
+        {body,"background","#d5d5d5",""},
+        {body,"color","hsl(0deg, 0%, 21%)",""},
+        {songlist,"background", "#eaeaeaa3",""},
+        {bgblur,"filter","blur(40px) opacity(0.8)",""},
+        {play_button,"filter","invert(1)",""},
+        {stop_button,"filter","invert(1)",""},
+        {open_button,"filter","invert(1)",""},
+        {lightdark_button, "filter","invert(1)",""},
+        {about_button, "filter","invert(1)",""},
+        {overviewcontainer,"background", "#eaeaeaa3",""},
+        {coverartinoverview, "border", "1px solid #999999",""}
+    }};
+    for(const auto& scheme:lightcolorscheme)
     {
-        std::cerr << "some issues happend in my end. TASK: changing all widgets to " << (is_dark?"dark.":"light.") <<  std::endl;
+        auto& [e,k,lightval,darkval] = scheme;
+        std::array<std::reference_wrapper<const std::string>,2> lightdark{{lightval,darkval}};
+        e.get().set_style(k, lightdark[is_dark]);
     }
-    try{
-        for(auto &song:songs)
-        {
-            auto &[element,tag,path]=song;
-            if(!tag.get_pic() && !path.empty())
-            {
-                element->set_html(
-                "<img src='"+stock_coverart+"' >"
-                "<div class='songdetails'>"
-                    "<h3>" + ((!tag.title().empty())? tag.title(): std::string("Not Kown")) + "</h3>"
-                    "<p>" + ((!tag.artist().empty())? tag.artist(): std::string("Not Kown")) + "</p>"
-                "</div>"
-                );
-            }
-        }
-
-        auto src = coverartinoverview.attributes().value()["src"];
-        if(src == "song.png" || src == "song-light.png")
-        {
-            coverartinoverview.set_attribute("src",stock_coverart);
-            bgblur.set_style("background-image","url('"+stock_coverart+"')");
-        }
-    }
-    catch(...)
+    for(auto &song:songs)
     {
-        std::cerr << "some issues happend in my end. TASK: song elements to " << (is_dark?"dark.":"light.") <<  std::endl;
+        auto &[element,tag,path]=song;
+        if(!tag.get_pic() && !path.empty())
+        {
+            element->set_html(
+            "<img src='"+stock_coverart+"' >"
+            "<div class='songdetails'>"
+                "<h3>" + ((!tag.title().empty())? tag.title(): std::string("Not Kown")) + "</h3>"
+                "<p>" + ((!tag.artist().empty())? tag.artist(): std::string("Not Kown")) + "</p>"
+            "</div>"
+            );
+        }
     }
+    const auto src = coverartinoverview.attributes().value()["src"];
+    if(src == "song.png" || src == "song-light.png")
+    {
+        coverartinoverview.set_attribute("src",stock_coverart);
+        bgblur.set_style("background-image","url('"+stock_coverart+"')");
+    }
+    
     this->eval(is_dark?"document.documentElement.style.setProperty('--song-hvr-bg-color', '');"  :
                        "document.documentElement.style.setProperty('--song-hvr-bg-color', '#d4d4d4');");
     
@@ -294,14 +280,14 @@ void mywindow::toggledark(bool is_dark)
 void mywindow::on_dbginfoclicked()//hidden button
 {
     const auto [first_gem_ver,second_gem_ver,third_gem_ver] = Gempyre::version();
-    std::cout << "-------------🚧DEBUG INFO🚧-------------" <<
+    std::cout << std::boolalpha << "-------------🚧DEBUG INFO🚧-------------" << 
     "\nGempyre version: " << first_gem_ver << '.' << second_gem_ver << '.' <<third_gem_ver <<
     "\nSoloud Version: " << music_player.pass_engine()->getVersion() <<
     "\nNumber of indexed files: " << (songs.size()==0?songs.size(): songs.size()-1)  <<
     "\nVolume from MusicPlayer class: " << music_player.pass_engine()->getGlobalVolume() << 
     "\nstream position: " << music_player.get_position() << '%' <<
-    "\nis there any active stream? " << (music_player.is_active()?"yes":"no") <<
-    "\nis stream paused? " << (music_player.is_paused()?"yes":"no") <<
-    "\nis stream playing? " << (music_player.is_playing()?"yes":"no") <<
+    "\nis there any active stream? " << music_player.is_active() <<
+    "\nis stream paused? " << music_player.is_paused() <<
+    "\nis stream playing? " << music_player.is_playing() <<
     "\n--------------------------------------\n" << std::endl;
 }

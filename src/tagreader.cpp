@@ -75,10 +75,12 @@ m_pic_size(0)
         if(pos != std::string::npos)m_title.erase(pos);
     }
     //now lets block ads with modern CPP
-    std::regex adblock = std::regex("(www\\.|https://|http://)?(\\S|-)*(\\.((com)|(io)|(org)|(xyz)|(ir)|(in)|(nl)))",std::regex_constants::icase);
+    const std::regex adblock = std::regex("(www\\.|https://|http://)?(\\S|-)*(\\.((com)|(io)|(org)|(xyz)|(ir)|(in)|(nl)))",std::regex_constants::icase);
     m_title=std::regex_replace(m_title,adblock,"");
     m_artist=std::regex_replace(m_artist,adblock,"");
     if(m_title.find_first_not_of(" \t")==std::string::npos)m_title.clear();//if the name of the site was just ads & adblocker removed everything we endup having whitespaces.
+    if(m_title.empty())m_title="Not Known";
+    if(m_artist.empty())m_artist="Not Known";
 }
 std::string tagreader::title () const
 {
