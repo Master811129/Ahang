@@ -35,13 +35,13 @@ bool ahang::is_blacklistformat(const std::filesystem::path &extension) noexcept
     return false;
 }
 
-int ahang::system(const std::string& e)//stub for new system()
+int ahang::system(const std::string& command)//stub for new system()
 {
     #ifdef WINDOWS
     
         STARTUPINFO info={sizeof(info)};
 		PROCESS_INFORMATION processInfo;
-		if (CreateProcess(nullptr, const_cast<char*>(convert_to_opus_cmd.c_str()), nullptr, nullptr, TRUE,CREATE_NO_WINDOW, nullptr, nullptr, &info, &processInfo))
+		if (CreateProcess(nullptr, const_cast<char*>(command.c_str()), nullptr, nullptr, TRUE,CREATE_NO_WINDOW, nullptr, nullptr, &info, &processInfo))
 		{
 			WaitForSingleObject(processInfo.hProcess, INFINITE);
 			CloseHandle(processInfo.hProcess);
@@ -49,6 +49,6 @@ int ahang::system(const std::string& e)//stub for new system()
 		}
         return 0;
     #else
-    return std::system(e.c_str());
+    return std::system(command.c_str());
     #endif
 }
