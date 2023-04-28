@@ -14,7 +14,8 @@ ui/play.png
 ui/stop.png
 ui/open.png
 ui/about.html
-ui/about.png)
+ui/about.png
+ui/favicon.ico)
 
 include(FetchContent)
 find_package(gempyre REQUIRED)
