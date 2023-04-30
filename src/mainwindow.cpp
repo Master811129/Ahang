@@ -21,6 +21,7 @@
 #include <fstream>
 #include <tuple>
 #include <vector>
+#include <mutex>
 // #define ahang_debug
 constexpr const std::string scale_smaller = "scale(0.88)";
 
@@ -124,41 +125,47 @@ void mywindow::onopenbuttonclicked()
     }
 }
 
+
 void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element>,tagreader,std::filesystem::path> &song)
 {
     auto&[element,tag,filepath] = song;
     const std::filesystem::path filepath_cpy = filepath;//for using in thread
     static int lasttimerID =  0;
-    music_player.play(filepath_cpy);//it cancels the previous song automatically if playing 
-    this->cancel_timer(lasttimerID);
-    lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
-    std::thread opusworkaround([this,filepath_cpy]{
-        std::this_thread::sleep_for(100ms);
-        if(!music_player.is_active())
-        {
-            if (filepath_cpy.extension()==".opus")
+    std::thread play ([this,filepath_cpy]
+    {
+        std::lock_guard<std::mutex> a(this->mutex) ;
+        music_player.play(filepath_cpy);//it cancels the previous song automatically if playing 
+        this->cancel_timer(lasttimerID);
+        lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
+        std::thread opusworkaround([this,filepath_cpy]{
+            std::this_thread::sleep_for(100ms);
+            if(!music_player.is_active())
             {
-                songnameinoverview.set_attribute("class","loading-animation");
-                std::stringstream t ;
-                t << std::quoted(filepath_cpy.string());
-                const auto tmp = std::filesystem::temp_directory_path();
-                if(std::filesystem::exists(tmp/"ahang.mp3"))std::filesystem::remove(tmp/"ahang.mp3");
-                auto convert_to_opus_cmd = "ffmpeg -i "+ t.str() +" -acodec mp3 " + (tmp/"ahang.mp3").string();
-                ahang::system(convert_to_opus_cmd);
-                music_player.play(tmp/"ahang.mp3");
-                lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
-                coverartinoverview.set_style("transform", "scale(1)");
-                
+                if (filepath_cpy.extension()==".opus")
+                {
+                    songnameinoverview.set_attribute("class","loading-animation");
+                    std::stringstream t ;
+                    t << std::quoted(filepath_cpy.string());
+                    const auto tmp = std::filesystem::temp_directory_path();
+                    if(std::filesystem::exists(tmp/"ahang.mp3"))std::filesystem::remove(tmp/"ahang.mp3");
+                    auto convert_to_opus_cmd = "ffmpeg -i "+ t.str() +" -acodec mp3 " + (tmp/"ahang.mp3").string();
+                    ahang::system(convert_to_opus_cmd);
+                    music_player.play(tmp/"ahang.mp3");
+                    lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
+                    coverartinoverview.set_style("transform", "scale(1)");
+        
+                }
             }
-        }
-        else 
-        {
-            coverartinoverview.set_style("transform", "scale(1)");// I dont think this is safe
-        }
-        songnameinoverview.set_attribute("class","");
+            else 
+            {
+                coverartinoverview.set_style("transform", "scale(1)");// I dont think this is safe
+            }
+            songnameinoverview.set_attribute("class","");
+        });
+        opusworkaround.detach();
     });
 
-    opusworkaround.detach();
+    play.detach();
     const auto title = tag.title();
     songnameinoverview.set_html(title);
     if(tag.get_pic())

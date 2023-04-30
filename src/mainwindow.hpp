@@ -34,7 +34,7 @@ public Gempyre::Ui
     Gempyre::Ui About;
 
     MusicPlayer music_player;
-
+    std::mutex mutex;
     void onopenbuttonclicked();
     void ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element>,tagreader,std::filesystem::path>&);
     void onstopclicked();
