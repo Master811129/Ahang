@@ -67,6 +67,8 @@ about_button(*this,"aboutbutton")
     volume_slider.subscribe("input", std::bind(&mywindow::onvolumesliderchanged,this,std::placeholders::_1));
     lightdark_button.subscribe("click", std::bind(&mywindow::ondarklightbtn_clicked,this,std::placeholders::_1));
     seeker.subscribe("input", std::bind(&mywindow::onuserchangedseeker,this,std::placeholders::_1));
+    this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
+    this->set_timer_on_hold(true);
     if(GempyreUtils::current_os()==GempyreUtils::OS::WinOs) about_button.subscribe("click",
     std::bind(&mywindow::alert,this,"Ahang\nSimple music player.\nSource code and donation:\nhttps://github.com/master811129/ahang"));
     else about_button.subscribe("click", std::bind(&Gempyre::Ui::run,&About));
@@ -130,13 +132,14 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
 {
     auto&[element,tag,filepath] = song;
     const std::filesystem::path filepath_cpy = filepath;//for using in thread
-    static int lasttimerID =  0;
+    //static int lasttimerID =  0;
     std::thread play ([this,filepath_cpy]
     {
         std::lock_guard<std::mutex> a(this->mutex) ;
         music_player.play(filepath_cpy);//it cancels the previous song automatically if playing 
-        this->cancel_timer(lasttimerID);
-        lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
+        //this->cancel_timer(lasttimerID);
+        //lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
+        this->set_timer_on_hold(false);
         std::thread opusworkaround([this,filepath_cpy]{
             std::this_thread::sleep_for(100ms);
             if(!music_player.is_active())
@@ -151,9 +154,9 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
                     auto convert_to_opus_cmd = "ffmpeg -i "+ t.str() +" -acodec mp3 " + (tmp/"ahang.mp3").string();
                     ahang::system(convert_to_opus_cmd);
                     music_player.play(tmp/"ahang.mp3");
-                    lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
+                    //lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
+                    this->set_timer_on_hold(false);
                     coverartinoverview.set_style("transform", "scale(1)");
-        
                 }
             }
             else 
@@ -198,7 +201,8 @@ void mywindow::onplaypause_clicked()
     {//that means we have a song that already has been played and we want to replay it. 
     ///If it is not the case MusicPlayer class will handle it automatically.(does nothing)
         music_player.play();
-        this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
+        this->set_timer_on_hold(false);
+        //this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
     }
 }
 
@@ -208,7 +212,8 @@ void mywindow::update_seeker_pos(Gempyre::Ui::TimerId id)
     seeker.set_attribute("value",std::to_string(music_player.get_position()));
     if(!music_player.is_active())
     {
-        this->cancel_timer(id);
+        //this->cancel_timer(id);
+        this->set_timer_on_hold(true);
         coverartinoverview.set_style("transform", scale_smaller);
     }
 }
