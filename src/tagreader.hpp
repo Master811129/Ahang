@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <taglib/tag.h>
 #include <taglib/taglib.h>
-#include <taglib/id3v2.h>
+#include <taglib/id3v2tag.h>
 #include <taglib/mpegfile.h>
 #include <taglib/asffile.h>
 #include <taglib/flacfile.h>
