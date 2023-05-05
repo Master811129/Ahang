@@ -305,7 +305,9 @@ h1{
         overflow-y: unset;
         height: 100%;
     }
-
+    .playerbar{
+        flex-flow: column;
+    }
     .playerbar .rightside .vol{
         display: none;
     }
