@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
-#include <cstdlib>
 #include <gempyre_client.h>
 #include <filesystem>
 #include <functional>
@@ -26,14 +25,16 @@
 constexpr const std::string scale_smaller = "scale(0.88)";
 
 mywindow::mywindow(const Filemap& f,const std::string &index,const std::string &title,const int width, const int height):
-About(f,"about.html","About",500,220,Gempyre::Ui::NoResize),
+
 #ifndef ahang_debug
 Gempyre::Ui(f,index,title,width,height),
  #else
-Gempyre::Ui(f,index,"","debug=True"),
+//Gempyre::Ui(f,index,"","debug=True"),
+Gempyre::Ui(f,index,"xdg-open ",""),//fake constructor for debug purposes
 #endif
-//Gempyre::Ui(f,index,"xdg-open ",""),//fake constructor for debug purposes
+
 //Gempyre::Ui(f,index,"librewolf ",""),//fake constructor for debug purposes
+About(f,"about.html","About",500,220,Gempyre::Ui::NoResize),
 songlist(*this, "songlist"),
 bgblur(*this,"background-blur"),
 open_button(*this, "open"),
@@ -85,10 +86,10 @@ void mywindow::onopenbuttonclicked()
         for(auto &song : songs)std::get<0>(song)->remove();
         songs.clear();
         auto start = std::chrono::high_resolution_clock::now();
-        for(const auto &entry : std::filesystem::directory_iterator(dir))
+        for(const auto &entry : std::filesystem::recursive_directory_iterator(dir))
         {
-            if(entry.is_regular_file() && (entry.path().filename().string()[0]!='.') && !ahang::is_blacklistformat(entry.path().extension())) 
-            //if file is not a dir and not hidden and not blacklisted as non playable
+            if(entry.is_regular_file() && (entry.path().filename().string()[0]!='.') && ahang::is_supported(entry.path())) 
+            //if file is not a dir and not hidden and playable
             {
                 songs.emplace_back(nullptr,tagreader(entry.path()),entry.path());//element - tag class - path
             }
@@ -132,13 +133,10 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
 {
     auto&[element,tag,filepath] = song;
     const std::filesystem::path filepath_cpy = filepath;//for using in thread
-    //static int lasttimerID =  0;
     std::thread play ([this,filepath_cpy]
     {
         std::lock_guard<std::mutex> a(this->mutex) ;
         music_player.play(filepath_cpy);//it cancels the previous song automatically if playing 
-        //this->cancel_timer(lasttimerID);
-        //lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
         this->set_timer_on_hold(false);
         std::thread opusworkaround([this,filepath_cpy]{
             std::this_thread::sleep_for(100ms);
@@ -154,7 +152,6 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
                     auto convert_to_opus_cmd = "ffmpeg -i "+ t.str() +" -acodec mp3 " + (tmp/"ahang.mp3").string();
                     ahang::system(convert_to_opus_cmd);
                     music_player.play(tmp/"ahang.mp3");
-                    //lasttimerID= this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
                     this->set_timer_on_hold(false);
                     coverartinoverview.set_style("transform", "scale(1)");
                 }
@@ -202,17 +199,14 @@ void mywindow::onplaypause_clicked()
     ///If it is not the case MusicPlayer class will handle it automatically.(does nothing)
         music_player.play();
         this->set_timer_on_hold(false);
-        //this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
     }
 }
 
 void mywindow::update_seeker_pos(Gempyre::Ui::TimerId id)
 {
-    //std::cout << "Timer triggered with ID: " << id << std::endl;
     seeker.set_attribute("value",std::to_string(music_player.get_position()));
     if(!music_player.is_active())
     {
-        //this->cancel_timer(id);
         this->set_timer_on_hold(true);
         coverartinoverview.set_style("transform", scale_smaller);
     }

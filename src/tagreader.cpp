@@ -55,7 +55,6 @@ m_pic_size(0)
             m_pic_size=m_album_art.size();
         }
     }
-    else if(extension==".mkv"|extension==".avi"|extension==".wmv");//this will avoid opening those file thus improve performance
     else //this will get tag info from file automatically but wont get the photo unfortunately.
     {
         TagLib::FileRef autofile (path.string().c_str());
