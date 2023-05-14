@@ -34,7 +34,10 @@ h1{
     font-weight: 300;
     text-align: center;
 }
-
+.maincontainer{
+    display: flex;
+    flex-direction: row;
+}
  #background-blur{
     z-index: -1;
     background: var(--bg-image);
@@ -88,9 +91,6 @@ h1{
 
 
 .playerbar{
-    /*position: absolute;
-    bottom:0;
-    left: 0%;*/
     overflow: hidden;
     width: 100%;
     display: flex;
@@ -159,10 +159,7 @@ h1{
     opacity: 1.0;
 }
 
-.maincontainer{
-    display: flex;
-    flex-direction: row;
-}
+
 
 .songoverview{
     background: var(--songlist-bg-color);
