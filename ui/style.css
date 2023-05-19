@@ -316,8 +316,8 @@ h1{
 
 @media only screen and (max-height:512px){/*wearing devices that i dont have*/
     h1{
-        font-size: larger;
-    }
+        font-size: larger !important;
+    }    
 }
 
 

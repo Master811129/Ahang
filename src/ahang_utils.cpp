@@ -1,5 +1,4 @@
 #include "ahang_utils.hpp"
-#include <cstdlib>
 #include <filesystem>
 #include <array>
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)

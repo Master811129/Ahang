@@ -28,13 +28,14 @@ mywindow::mywindow(const Filemap& f,const std::string &index,const std::string &
 
 #ifndef ahang_debug
 Gempyre::Ui(f,index,title,width,height),
+//Gempyre::Ui(f,index,"weaver ",""),//fake constructor for debug purposes
+
  #else
 //Gempyre::Ui(f,index,"","debug=True"),
 Gempyre::Ui(f,index,"xdg-open ",""),//fake constructor for debug purposes
 #endif
-
-//Gempyre::Ui(f,index,"librewolf ",""),//fake constructor for debug purposes
 About(f,"about.html","About",500,220,Gempyre::Ui::NoResize),
+//About(f,"about.html","weaver //target/0",""),
 songlist(*this, "songlist"),
 bgblur(*this,"background-blur"),
 open_button(*this, "open"),
@@ -168,6 +169,8 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
     play.detach();
     const auto title = tag.title();
     songnameinoverview.set_html(title);
+    if(title.length()>35)songnameinoverview.set_style("font-size", "1.52rem");
+    else songnameinoverview.set_style("font-size", "");
     if(tag.get_pic())
     {
         auto picsrc = "data:image/png;base64, "+GempyreUtils::base64_encode(reinterpret_cast<const unsigned char*>(tag.get_pic().value()), tag.pic_size());

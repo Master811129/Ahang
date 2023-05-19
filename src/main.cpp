@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <gempyre.h>
 #include "mainwindow.hpp"
 #include "resources.h"
