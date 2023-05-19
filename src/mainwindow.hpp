@@ -14,6 +14,8 @@ public Gempyre::Ui
 {
     public:
     mywindow(const Gempyre::Ui::Filemap&,const std::string&, const std::string&,const int,const int);
+    void toggledark(bool dark);
+
     private:
     std::vector<std::tuple<std::shared_ptr<Gempyre::Element>, tagreader,std::filesystem::path>> songs;
     Gempyre::Element overviewcontainer;
@@ -44,7 +46,6 @@ public Gempyre::Ui
     void onuserchangedseeker (const Gempyre::Event&);
     void onvolumesliderchanged (const Gempyre::Event& slider_ref);
     void ondarklightbtn_clicked(const Gempyre::Event& e);
-    void toggledark(bool dark);
     void on_aboutbtnclicked (void);
     std::string stock_coverart;//song.png song-light.png
 };
