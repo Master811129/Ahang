@@ -94,6 +94,7 @@ std::string tagreader::artist() const
 std::optional<char *> tagreader::get_pic(void)
 {
     if(m_pic_size==0)return {};
+    if(m_pic_size >= 900000) return {}; //currently Gempyre hangs when you put a heavy picture on UI
     return m_album_art.data();
 }
 
