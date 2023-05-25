@@ -22,7 +22,7 @@
 #include <vector>
 #include <mutex>
 // #define ahang_debug
-constexpr const std::string scale_smaller = "scale(0.88)";
+constexpr auto scale_smaller = "scale(0.88)";
 
 mywindow::mywindow(const Filemap& f,const std::string &index,const std::string &title,const int width, const int height):
 
@@ -108,7 +108,7 @@ void mywindow::onopenbuttonclicked()
             element->set_attribute("class","song");
             const auto title = tag.title();
             const auto artist = tag.artist();
-            const std::string picsrc (tag.get_pic()?
+            const auto picsrc (tag.get_pic()?
                 "data:image/png;base64, "+GempyreUtils::base64_encode(reinterpret_cast<const unsigned char*>(tag.get_pic().value()), tag.pic_size()):
                 stock_coverart
             );    
