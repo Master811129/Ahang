@@ -13,7 +13,7 @@ class mywindow:
 public Gempyre::Ui
 {
     public:
-    mywindow(const Gempyre::Ui::Filemap&,const std::string&, const std::string&,const int,const int);
+    mywindow(const std::string&, const std::string&,const int,const int);
     void toggledark(bool dark);
 
     private:
@@ -33,7 +33,6 @@ public Gempyre::Ui
     Gempyre::Element debuginfo_button;//I make and style this in cpp file
     Gempyre::Element seeker;//that widget that seeks through the song
     Gempyre::Element playerbar;//I only add this for change its appearance
-    Gempyre::Ui About;
 
     MusicPlayer music_player;
     std::mutex mutex;

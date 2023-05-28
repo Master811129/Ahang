@@ -1,10 +1,9 @@
 #include <gempyre.h>
 #include "mainwindow.hpp"
-#include "resources.h"
 
 int main (int argc, char **argv)
 {
-    mywindow w(Resourcesh,"index.html","Ahang",1152,648);
+    mywindow w("index.html","Ahang",1152,648);
     //Qt6 is a bit quirky when it comes to wayland so i disabled it
     putenv(const_cast<char *>("QT_QPA_PLATFORM=xcb"));
     //TODO maybe an icon manager?

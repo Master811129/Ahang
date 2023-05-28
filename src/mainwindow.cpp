@@ -1,4 +1,5 @@
 #include "mainwindow.hpp"
+#include "about_dialog.hpp"
 #include "gempyre.h"
 #include "music_player.hpp"
 #include "tagreader.hpp"
@@ -21,21 +22,21 @@
 #include <tuple>
 #include <vector>
 #include <mutex>
+#include <resources.h>
 // #define ahang_debug
 constexpr auto scale_smaller = "scale(0.88)";
 
-mywindow::mywindow(const Filemap& f,const std::string &index,const std::string &title,const int width, const int height):
+mywindow::mywindow(const std::string &index,const std::string &title,const int width, const int height):
 
 #ifndef ahang_debug
-Gempyre::Ui(f,index,title,width,height),
-//Gempyre::Ui(f,index,"weaver ",""),//fake constructor for debug purposes
+Gempyre::Ui(Resourcesh,index,title,width,height),
+//Gempyre::Ui(Resourcesh,index,"weaver ",""),//fake constructor for debug purposes
 
  #else
 //Gempyre::Ui(f,index,"","debug=True"),
 Gempyre::Ui(f,index,"xdg-open ",""),//fake constructor for debug purposes
 #endif
-About(f,"about.html","About",500,220,Gempyre::Ui::NoResize),
-//About(f,"about.html","weaver //target/0",""),
+
 songlist(*this, "songlist"),
 bgblur(*this,"background-blur"),
 open_button(*this, "open"),
@@ -73,7 +74,7 @@ about_button(*this,"aboutbutton")
     this->set_timer_on_hold(true);
     if(GempyreUtils::current_os()==GempyreUtils::OS::WinOs) about_button.subscribe("click",
     std::bind(&mywindow::alert,this,"Ahang\nSimple music player.\nSource code and donation:\nhttps://github.com/master811129/ahang"));
-    else about_button.subscribe("click", std::bind(&Gempyre::Ui::run,&About));
+    else about_button.subscribe("click", std::bind(&mywindow::on_aboutbtnclicked,this));
     music_player.set_volume(50);
 }
 
@@ -285,6 +286,12 @@ void mywindow::toggledark(bool is_dark)
     
 }
 
+void mywindow::on_aboutbtnclicked ()
+{
+    auto about_dialog = std::make_unique<AboutDialog>(Resourcesh,"about.html","");
+    // auto about_dialog = std::make_unique<AboutDialog>(Resourcesh,"about.html","weaver //target/0");
+    about_dialog->run();
+}
 
 void mywindow::on_dbginfoclicked()//hidden button
 {

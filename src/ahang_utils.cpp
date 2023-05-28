@@ -32,3 +32,12 @@ int ahang::system(const std::string& command)
     return std::system(command.c_str());
     #endif
 }
+
+void ahang::open_link(const std::string link)
+{
+    #ifndef WINDOWS
+    ahang::system("xdg-open " + link);
+    #else
+    ahang::system(link);
+    #endif
+}
