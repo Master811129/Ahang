@@ -1,4 +1,3 @@
-stop.png.bak
 soloud/build
 build
 misc
@@ -35,3 +34,6 @@ index_old.html
 *.exe
 *.out
 *.app
+
+#backup files
+*.bak
