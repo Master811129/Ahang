@@ -8,7 +8,7 @@
     /*--songlist-bg-color: #13131313; for blured background*/
     /* --bg-image: radial-gradient(circle at bottom,#000000,#505050);it looks like it is super intensive for old browsers. I'll drop it */
     --bg-image:url("song.png");
-    --songlist-bg-color: #21212145; 
+    --songlist-bg-color: #36363845; 
     --main-content-clr:#131313;
     --text-clr: hsl(0,0%,83%);
     --song-hvr-bg-color: #282831;
