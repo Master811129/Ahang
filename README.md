@@ -3,7 +3,6 @@
 # Ahang
 Ahang is a simple music player.
 
-## 🚧Warning: this project is not ready for daily use🚧
 
 Ahang is yet another simple and minimalistic music player like G4Music and Amberol wtitten in modern C++. You just select a folder and it shows the musics inside it. Then you click and play. Simple. but there are some key feature that makes it a bit different:
 

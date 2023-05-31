@@ -3,7 +3,6 @@
 # آهنگ
 برنامه ی پخش آهنگ
 
-## 🚧هنوز در دست توسعه🚧
 
 Ahang is yet another simple and minimalistic music player like G4Music and Amberol wtitten in C++20. You just select a folder and it shows the musics inside it. Then you click and play. Simple. but there are some key feature that makes it a bit different:
 
