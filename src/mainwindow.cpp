@@ -30,11 +30,11 @@ mywindow::mywindow(const std::string &index,const std::string &title,const int w
 
 #ifndef ahang_debug
 Gempyre::Ui(Resourcesh,index,title,width,height),
-//Gempyre::Ui(Resourcesh,index,"weaver ",""),//fake constructor for debug purposes
+//Gempyre::Ui(Resourcesh,index,"weaver //target/0",""),//fake constructor for debug purposes
 
  #else
 //Gempyre::Ui(f,index,"","debug=True"),
-Gempyre::Ui(f,index,"xdg-open ",""),//fake constructor for debug purposes
+Gempyre::Ui(Resourcesh,index,"xdg-open ",""),//fake constructor for debug purposes
 #endif
 
 songlist(*this, "songlist"),
@@ -156,11 +156,13 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
                     music_player.play(tmp/"ahang.mp3");
                     this->set_timer_on_hold(false);
                     coverartinoverview.set_style("transform", "scale(1)");
+                    play_button.set_style("background-image", "url('pause.png')");
                 }
             }
             else 
             {
                 coverartinoverview.set_style("transform", "scale(1)");// I dont think this is safe
+                play_button.set_style("background-image", "url('pause.png')");
             }
             songnameinoverview.set_attribute("class","");
         });
@@ -196,8 +198,16 @@ void mywindow::onplaypause_clicked()
 {
     //std::cout << "Play/Pause: Will change MusicPlayer class instance to state: " << (!music_player.is_paused()?"PAUSE":"PLAY") << std::endl;
     music_player.toggle_pause();
-    if(music_player.is_paused())coverartinoverview.set_style("transform", scale_smaller);
-    else coverartinoverview.set_style("transform", "scale(1)");
+    if(music_player.is_paused())
+    {
+        coverartinoverview.set_style("transform", scale_smaller);
+        play_button.set_style("background-image", "url('play.png')");
+    }
+    else
+    {
+        coverartinoverview.set_style("transform", "scale(1)");
+        play_button.set_style("background-image", "url('pause.png')");
+    } 
     if(!music_player.is_active())
     {//that means we have a song that already has been played and we want to replay it. 
     ///If it is not the case MusicPlayer class will handle it automatically.(does nothing)
@@ -213,6 +223,7 @@ void mywindow::update_seeker_pos(Gempyre::Ui::TimerId id)
     {
         this->set_timer_on_hold(true);
         coverartinoverview.set_style("transform", scale_smaller);
+        play_button.set_style("background-image", "url('play.png')");
     }
 }
 

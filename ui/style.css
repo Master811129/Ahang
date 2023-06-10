@@ -64,16 +64,19 @@ h1{
     width: 2.75rem;
     height: 2.75rem;
     position: relative;
+    background-repeat: no-repeat;
+    background-size: 32px;
+    background-position: center;
 }
 
 
 .flatbutton:hover{
-    background: #ffffff90;
+    background-color: #ffffff90;
 }
 
 .flatbutton:active
 {
-    background: #ffffff30;
+    background-color: #ffffff30;
 }
 
 .flatbutton *{

@@ -11,6 +11,7 @@ ui/ir_sans.ttf
 ui/song-light.png
 ui/lightdark.png
 ui/play.png
+ui/pause.png
 ui/stop.png
 ui/open.png
 ui/about.html
