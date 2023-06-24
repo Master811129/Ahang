@@ -42,6 +42,7 @@ bgblur(*this,"background-blur"),
 open_button(*this, "open"),
 stop_button(*this,"stopbutton"),
 play_button(*this,"playbutton"),
+next_button(*this,"nextbutton"),
 lightdark_button(*this,"lightdark"),
 volume_slider(*this,"vol"),
 seeker(*this,"seeker"),
@@ -69,6 +70,7 @@ about_button(*this,"aboutbutton")
     play_button.subscribe("click", std::bind(&mywindow::onplaypause_clicked,this));
     volume_slider.subscribe("input", std::bind(&mywindow::onvolumesliderchanged,this,std::placeholders::_1));
     lightdark_button.subscribe("click", std::bind(&mywindow::ondarklightbtn_clicked,this,std::placeholders::_1));
+    next_button.subscribe("click", std::bind(&mywindow::play_next,this,true));
     seeker.subscribe("input", std::bind(&mywindow::onuserchangedseeker,this,std::placeholders::_1));
     this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
     this->set_timer_on_hold(true);
@@ -125,8 +127,6 @@ void mywindow::onopenbuttonclicked()
         
         auto stop =  std::chrono::high_resolution_clock::now();
         std::cout << "indexed in: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop-start).count() << "ms" << std::endl;
-        songs.emplace_back(std::make_shared<Gempyre::Element>(*this,"div",songlist),"","");//space at the end of the list
-        std::get<0>(songs[songs.size()-1])->set_attribute("class","lastspace");
     }
 }
 
@@ -239,6 +239,28 @@ void mywindow::onvolumesliderchanged(const Gempyre::Event& slider_ref)
     music_player.set_volume(vol);
 }
 
+
+void mywindow::play_next(bool can_cycle_back)
+{
+    //whats currently playing
+    const auto curr_playing_path = music_player.path();
+    const auto last_block = songs.size()-1;
+    for(auto a=0;a<songs.size();a++)
+    {
+        if(std::get<2>(songs[a])==curr_playing_path)
+        {
+            if(a == last_block)
+            {
+                if(!can_cycle_back)return;
+                this->ononesongentryclicked(songs[0]);
+                return;
+            }
+            this->ononesongentryclicked(songs[a+1]);
+            return;
+        }
+    }
+}
+
 void mywindow::ondarklightbtn_clicked(const Gempyre::Event& e)
 {
     this->toggledark(e.element.values()->at("checked")=="true");
@@ -251,7 +273,7 @@ void mywindow::toggledark(bool is_dark)
     if(is_dark)stock_coverart="song.png";
     else stock_coverart="song-light.png";
     //element attr light dark
-    std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,12> lightcolorscheme{{
+    std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,13> lightcolorscheme{{
         {body,"color-scheme","light","dark"}, //Chromium does not respect user prefrence so I do.
         {body,"background","#d5d5d5",""},
         {body,"color","hsl(0deg, 0%, 21%)",""},
@@ -259,6 +281,7 @@ void mywindow::toggledark(bool is_dark)
         {bgblur,"filter","blur(40px) opacity(0.8)",""},
         {play_button,"filter","invert(1)",""},
         {stop_button,"filter","invert(1)",""},
+        {next_button,"filter","invert(1)",""},
         {open_button,"filter","invert(1)",""},
         {lightdark_button, "filter","invert(1)",""},
         {about_button, "filter","invert(1)",""},

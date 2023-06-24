@@ -29,6 +29,7 @@ public Gempyre::Ui
     Gempyre::Element volume_slider;
     Gempyre::Element lightdark_button;
     Gempyre::Element about_button;
+    Gempyre::Element next_button;
 
     Gempyre::Element debuginfo_button;//I make and style this in cpp file
     Gempyre::Element seeker;//that widget that seeks through the song
@@ -46,5 +47,6 @@ public Gempyre::Ui
     void onvolumesliderchanged (const Gempyre::Event& slider_ref);
     void ondarklightbtn_clicked(const Gempyre::Event& e);
     void on_aboutbtnclicked (void);
+    void play_next (bool can_cycle_back);
     std::string stock_coverart;//song.png song-light.png
 };

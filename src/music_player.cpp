@@ -1,5 +1,7 @@
 #include "music_player.hpp"
+#include <filesystem>
 #include <iostream>
+#include <optional>
 #include <soloud.h>
 
 
@@ -23,6 +25,7 @@ void MusicPlayer::play(const std::filesystem::path &music_path)
     engine.stopAll();
     stream.load(music_path.string().c_str());
     this->play();
+    m_path = music_path;
 }
 
 void MusicPlayer::play()
@@ -74,6 +77,11 @@ float MusicPlayer::get_position()
     return pos*100/length;
 }
 
+const std::optional<std::filesystem::path> MusicPlayer::path() const
+{
+    if(m_path) return m_path;
+    return {};
+}
 
 void MusicPlayer::seek(float precent_value)
 {

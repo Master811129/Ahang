@@ -269,10 +269,6 @@ h1{
     font-size: 0.95rem;
 }
 
-.lastspace{
-    margin-bottom: 8.75vh;
-}
-
 ::-webkit-scrollbar{
     background: transparent;
     width: 0.35rem;

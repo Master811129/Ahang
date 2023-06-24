@@ -21,10 +21,12 @@ class MusicPlayer
     float get_position();
     void seek(float precent);
     void set_volume (float vol);
+    const std::optional<std::filesystem::path> path() const;
     const SoLoud::Soloud* pass_engine () ;
 
     private:
     SoLoud::Soloud engine;
     SoLoud::Wav stream;
     std::optional<int> stream_handle;
+    std::optional<std::filesystem::path> m_path;
 };
