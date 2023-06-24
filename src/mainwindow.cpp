@@ -196,6 +196,12 @@ void mywindow::onstopclicked(void)
 
 void mywindow::onplaypause_clicked()
 {
+    if(!music_player.path()&&!songs.empty())
+    {
+        //if the music player does not have a path
+        this->ononesongentryclicked(songs[0]);
+        return;
+    }
     //std::cout << "Play/Pause: Will change MusicPlayer class instance to state: " << (!music_player.is_paused()?"PAUSE":"PLAY") << std::endl;
     music_player.toggle_pause();
     if(music_player.is_paused())
