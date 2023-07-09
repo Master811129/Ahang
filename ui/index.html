@@ -31,12 +31,16 @@
                     <input type="range" class="seeker" name="seeker" id="seeker" min="0" max="100" step="0.01" value="0">
                 </div>
                 <div class="middle" >
-                    <button id="open" class="flatbutton"><img src='open.png'></button>
-                    <button class="flatbutton" id="stopbutton"><img src='stop.png'></button>
+                    <button id="open" class="flatbutton" style="background-image: url(open.png);"></button>
+                    <button class="flatbutton" id="stopbutton" style="background-image: url(stop.png);"></button>
                     <button class="flatbutton" id="playbutton" style="background-image: url(play.png);"></button>
                     <button class="flatbutton" id="nextbutton" style="background-image: url('next.png');"></button>
-                    <input type="checkbox" id="lightdark" checked="true" style="margin: 0;" class="flatbutton">
-                    <button class="flatbutton" id="aboutbutton"><img src='about.png'></button>
+                    <div id="morebutton" class="dropdown flatbutton" style="background-image: url(more.png);">
+                        <div id="morebox" class="dropdown-box">
+                            <input type="checkbox" id="lightdark" checked="true" style="margin: 0;" class="flatbutton">
+                            <button class="flatbutton" id="aboutbutton" style="background-image: url(about.png);"></button>
+                        </div>
+                    </div>
                 </div>
                 <div class="rightside">
                     <input type="range" name="vol" id="vol" class="vol">

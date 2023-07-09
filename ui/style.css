@@ -79,27 +79,46 @@ h1{
     background-color: #ffffff30;
 }
 
-.flatbutton *{
+@keyframes fade{/*for dropdown*/
+    0%{
+        opacity: 0;
+        translate: 0 0;
+    }
+    100%{
+        opacity: 1;
+        translate: 0 -3px;
+    }
+}
+
+.dropdown{
+    position: relative;
+}
+
+.dropdown-box{
+    background: #ffffff30;
+    box-shadow: 0px 2px 4px black;
+    border-radius: 3px;
     position: absolute;
-    top:50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    margin: 0;
-    padding: 0;
-    -webkit-user-drag: none;
-}
-.flatbutton img{
-    width:32px;height:32px;
+    display: none;
+    bottom: 42px;
+    transition: all ease 220ms;
+    backdrop-filter: blur(50px);
+    animation: fade 220ms ease;
+    animation-fill-mode: forwards;
 }
 
+.dropdown:active{
+    background-color: #ffffff90 !important;
+}
 
+.dropdown:hover .dropdown-box{
+    display: block;
+}
 .playerbar{
-    overflow: hidden;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
 }
 
 .playerbar .leftside{

@@ -150,10 +150,9 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
                     std::stringstream t ;
                     t << std::quoted(filepath_cpy.string());
                     const auto tmp = std::filesystem::temp_directory_path();
-                    if(std::filesystem::exists(tmp/"ahang.mp3"))std::filesystem::remove(tmp/"ahang.mp3");
-                    auto convert_to_opus_cmd = "ffmpeg -i "+ t.str() +" -acodec mp3 " + (tmp/"ahang.mp3").string();
+                    const auto convert_to_opus_cmd = "ffmpeg -i "+ t.str() +" -acodec mp3 " + (tmp).string()+"/";
                     ahang::system(convert_to_opus_cmd);
-                    music_player.play(tmp/"ahang.mp3");
+                    music_player.play(tmp/filepath_cpy.filename());
                     this->set_timer_on_hold(false);
                     coverartinoverview.set_style("transform", "scale(1)");
                     play_button.set_style("background-image", "url('pause.png')");
@@ -249,11 +248,11 @@ void mywindow::onvolumesliderchanged(const Gempyre::Event& slider_ref)
 void mywindow::play_next(bool can_cycle_back)
 {
     //whats currently playing
-    const auto curr_playing_path = music_player.path();
+    const auto curr_playing = music_player.path();
     const auto last_block = songs.size()-1;
     for(auto a=0;a<songs.size();a++)
     {
-        if(std::get<2>(songs[a])==curr_playing_path)
+        if(std::get<2>(songs[a]).filename()==curr_playing->filename())
         {
             if(a == last_block)
             {
@@ -278,8 +277,10 @@ void mywindow::toggledark(bool is_dark)
     //Deceleraing Gempyre Element and then distroying it makes the UI library crazy.
     if(is_dark)stock_coverart="song.png";
     else stock_coverart="song-light.png";
+    auto morebutton = Gempyre::Element(*this, "morebutton");
+    auto morebox = Gempyre::Element(*this, "morebox");
     //element attr light dark
-    std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,13> lightcolorscheme{{
+    std::array<std::tuple<std::reference_wrapper<Gempyre::Element>,const std::string,const std::string,const std::string> ,15> lightcolorscheme{{
         {body,"color-scheme","light","dark"}, //Chromium does not respect user prefrence so I do.
         {body,"background","#d5d5d5",""},
         {body,"color","hsl(0deg, 0%, 21%)",""},
@@ -292,7 +293,9 @@ void mywindow::toggledark(bool is_dark)
         {lightdark_button, "filter","invert(1)",""},
         {about_button, "filter","invert(1)",""},
         {overviewcontainer,"background", "#eaeaeaa3",""},
-        {coverartinoverview, "border", "1px solid #999999",""}
+        {coverartinoverview, "border", "1px solid #999999",""},
+        {morebutton,"filter","invert(1)",""},
+        {morebox,"filter","invert(1)",""},
     }};
     for(const auto& scheme:lightcolorscheme)
     {

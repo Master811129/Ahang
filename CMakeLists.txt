@@ -15,6 +15,7 @@ ui/pause.png
 ui/next.png
 ui/stop.png
 ui/open.png
+ui/more.png
 ui/about.html
 ui/about.png
 ui/favicon.ico)
