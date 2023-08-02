@@ -162,6 +162,7 @@ h1{
 .playerbar .rightside .vol{
     opacity: 0;
     transition: 220ms ease;
+    width: 60%;
 }
 
 .playerbar .rightside .vol:hover{
