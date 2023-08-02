@@ -10,4 +10,5 @@ public Gempyre::Ui
     Gempyre::Element donation_link;
     Gempyre::Element issues_link;
     Gempyre::Element licence_link;
+    Gempyre::Element gempyre_version_line;
 };
