@@ -103,7 +103,7 @@ void mywindow::onopenbuttonclicked()
         });
         //TODO sort by other values;
         for(auto &song:songs)
-        {
+        {       
             //auto& below: Passing by reference is very important because we want to make a shared pointer. 
             //if we copy then make_shared, the pointer will be destroyed after we quit the scope.
             auto& [element,tag,filepath] = song;
@@ -297,15 +297,13 @@ void mywindow::toggledark(bool is_dark)
         {morebutton,"filter","invert(1)",""},
         {morebox,"filter","invert(1)",""},
     }};
-    for(const auto& scheme:lightcolorscheme)
+    for(const auto&[e,k,lightval,darkval] :lightcolorscheme)
     {
-        auto& [e,k,lightval,darkval] = scheme;
         std::array<std::reference_wrapper<const std::string>,2> lightdark{{lightval,darkval}};
         e.get().set_style(k, lightdark[is_dark]);
     }
-    for(auto &song:songs)
+    for(auto &[element,tag,path]:songs)
     {
-        auto &[element,tag,path]=song;
         if(!tag.get_pic() && !path.empty())
         {
             element->set_html(
