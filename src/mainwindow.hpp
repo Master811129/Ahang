@@ -33,7 +33,6 @@ public Gempyre::Ui
 
     Gempyre::Element debuginfo_button;//I make and style this in cpp file
     Gempyre::Element seeker;//that widget that seeks through the song
-    Gempyre::Element playerbar;//I only add this for change its appearance
 
     MusicPlayer music_player;
     std::mutex mutex;

@@ -23,20 +23,16 @@
 #include <vector>
 #include <mutex>
 #include <resources.h>
-// #define ahang_debug
+constexpr bool ahang_debug = false;
 constexpr auto scale_smaller = "scale(0.88)";
 
-mywindow::mywindow(const std::string &index,const std::string &title,const int width, const int height):
 
-#ifndef ahang_debug
+
+mywindow::mywindow(const std::string &index,const std::string &title,const int width, const int height):
 Gempyre::Ui(Resourcesh,index,title,width,height),
 //Gempyre::Ui(Resourcesh,index,"weaver //target/0",""),//fake constructor for debug purposes
-
- #else
 //Gempyre::Ui(f,index,"","debug=True"),
-Gempyre::Ui(Resourcesh,index,"xdg-open ",""),//fake constructor for debug purposes
-#endif
-
+//Gempyre::Ui(Resourcesh,index,"xdg-open ",""),//fake constructor for debug purposes
 songlist(*this, "songlist"),
 bgblur(*this,"background-blur"),
 open_button(*this, "open"),
@@ -51,20 +47,19 @@ songnameinoverview(*this,"songnameinoverview"),
 coverartinoverview(*this,"coverartinoverview"),
 debuginfo_button(*this,"button",this->root()),
 stock_coverart("song.png"),
-playerbar(*this,"playerbar"),
 about_button(*this,"aboutbutton")
 {
     debuginfo_button.set_style("position", "fixed");
-
-    #ifdef ahang_debug
+    if constexpr (ahang_debug)
+    {
         debuginfo_button.set_html("D");
         debuginfo_button.subscribe("click", std::bind(&mywindow::on_dbginfoclicked,this));
         debuginfo_button.set_style("right", "10px");
         debuginfo_button.set_style("top", "10px");
         debuginfo_button.set_style("font-size", "1.5rem");
-    #else 
-        debuginfo_button.set_style("display", "none");
-    #endif
+    }
+    else debuginfo_button.set_style("display", "none");
+    
     open_button.subscribe("click", std::bind(&mywindow::onopenbuttonclicked,this));
     stop_button.subscribe("click", std::bind(&mywindow::onstopclicked,this));
     play_button.subscribe("click", std::bind(&mywindow::onplaypause_clicked,this));
@@ -134,7 +129,7 @@ void mywindow::onopenbuttonclicked()
 void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element>,tagreader,std::filesystem::path> &song)
 {
     auto&[element,tag,filepath] = song;
-    const std::filesystem::path filepath_cpy = filepath;//for using in thread
+    const auto filepath_cpy = filepath;//for using in thread
     std::thread play ([this,filepath_cpy]
     {
         std::lock_guard<std::mutex> a(this->mutex) ;
@@ -147,13 +142,15 @@ void mywindow::ononesongentryclicked(std::tuple<std::shared_ptr<Gempyre::Element
                 if (filepath_cpy.extension()==".opus")
                 {
                     songnameinoverview.set_attribute("class","loading-animation");
-                    std::stringstream t ;
-                    t << std::quoted(filepath_cpy.string());
-                    const auto tmp = std::filesystem::temp_directory_path();
-                    const auto convert_to_opus_cmd = "ffmpeg -i "+ t.str() +" -acodec mp3 " + (tmp).string()+"/";
-                    ahang::system(convert_to_opus_cmd);
-                    music_player.play(tmp/filepath_cpy.filename());
-                    this->set_timer_on_hold(false);
+                    const auto tmp_file = std::filesystem::temp_directory_path()/filepath_cpy.filename().replace_extension("mp3");
+                    if(!std::filesystem::exists(tmp_file))
+                    {
+                        std::stringstream convert_to_opus_cmd;
+                        convert_to_opus_cmd << "ffmpeg -i " << std::quoted(filepath_cpy.string()) << " -acodec mp3 " <<  std::quoted(tmp_file.string()) ;
+                        ahang::system(convert_to_opus_cmd.str());
+                    }
+                    music_player.play(tmp_file);
+                    this->set_timer_on_hold(false);//this will enable update_seeker_pos() interval-calling
                     coverartinoverview.set_style("transform", "scale(1)");
                     play_button.set_style("background-image", "url('pause.png')");
                 }
