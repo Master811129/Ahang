@@ -1,6 +1,10 @@
 #include "ahang_utils.hpp"
+#include <cstdlib>
 #include <filesystem>
 #include <array>
+#include <optional>
+#include <cstdio>
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 #define WINDOWS
 #include <Windows.h>
@@ -40,4 +44,17 @@ void ahang::open_link(const std::string link)
     #else
     ahang::system(link);
     #endif
+}
+
+std::optional<std::filesystem::path> ahang::get_os_music_path()
+{
+    using std::filesystem::path;
+    #ifdef WINDOWS
+    const auto username = std::getenv("username");
+    if(username) return path("C:\users")/username/"Music";
+    #else
+    const auto username = std::getenv("USER");
+    if(username) return path("/home")/username/"Music/";
+    #endif
+    else return {};
 }
