@@ -61,6 +61,7 @@ about_button(*this,"aboutbutton")
     else debuginfo_button.set_style("display", "none");
     
     open_button.subscribe("click", std::bind(&mywindow::onopenbuttonclicked,this));
+    open_button.subscribe("auxclick", std::bind(&mywindow::index_songs_on_ui,this,ahang::get_os_music_path()));
     stop_button.subscribe("click", std::bind(&mywindow::onstopclicked,this));
     play_button.subscribe("click", std::bind(&mywindow::onplaypause_clicked,this));
     volume_slider.subscribe("input", std::bind(&mywindow::onvolumesliderchanged,this,std::placeholders::_1));
@@ -78,51 +79,54 @@ about_button(*this,"aboutbutton")
 
 void mywindow::onopenbuttonclicked()
 {
-    auto dialogpath = Gempyre::Dialog::open_dir_dialog();
-    if(dialogpath)
+    const auto dialogpath = Gempyre::Dialog::open_dir_dialog("Select a folder where your songs are.");
+    this->index_songs_on_ui(dialogpath);
+}
+
+
+void mywindow::index_songs_on_ui(const std::optional<std::filesystem::path>& dir)
+{
+    if(!dir)return;
+    for(auto &song : songs)std::get<0>(song)->remove();
+    songs.clear();
+    auto start = std::chrono::high_resolution_clock::now();
+    for(const auto &entry : std::filesystem::recursive_directory_iterator(dir.value()))
     {
-        std::filesystem::path dir = dialogpath.value();
-        for(auto &song : songs)std::get<0>(song)->remove();
-        songs.clear();
-        auto start = std::chrono::high_resolution_clock::now();
-        for(const auto &entry : std::filesystem::recursive_directory_iterator(dir))
+        if(entry.is_regular_file() && (entry.path().filename().string()[0]!='.') && ahang::is_supported(entry.path())) 
+        //if file is not a dir and not hidden and playable
         {
-            if(entry.is_regular_file() && (entry.path().filename().string()[0]!='.') && ahang::is_supported(entry.path())) 
-            //if file is not a dir and not hidden and playable
-            {
-                songs.emplace_back(nullptr,tagreader(entry.path()),entry.path());//element - tag class - path
-            }
+            songs.emplace_back(nullptr,tagreader(entry.path()),entry.path());//element - tag class - path
         }
-        std::ranges::sort(songs,[](auto& p,auto& s){
-            return std::filesystem::last_write_time(std::get<2>(p))>std::filesystem::last_write_time(std::get<2>(s));
-        });
-        //TODO sort by other values;
-        for(auto &song:songs)
-        {       
-            //auto& below: Passing by reference is very important because we want to make a shared pointer. 
-            //if we copy then make_shared, the pointer will be destroyed after we quit the scope.
-            auto& [element,tag,filepath] = song;
-            element=std::make_shared<Gempyre::Element>(*this,"div",songlist);
-            element->set_attribute("class","song");
-            const auto title = tag.title();
-            const auto artist = tag.artist();
-            const auto picsrc (tag.get_pic()?
-                "data:image/png;base64, "+GempyreUtils::base64_encode(reinterpret_cast<const unsigned char*>(tag.get_pic().value()), tag.pic_size()):
-                stock_coverart
-            );    
-            element->set_html(
-            "<img src='"+picsrc+"' >"
-            "<div class='songdetails'>"
-                "<h3>" + title + "</h3>"
-                "<p>" + artist + "</p>"
-            "</div>"
-            );
-            element->subscribe("click", std::bind(&mywindow::ononesongentryclicked,this,song));
+    }
+    std::ranges::sort(songs,[](auto& p,auto& s){
+        return std::filesystem::last_write_time(std::get<2>(p))>std::filesystem::last_write_time(std::get<2>(s));
+    });
+    //TODO sort by other values;
+    for(auto &song:songs)
+    {       
+        //auto& below: Passing by reference is very important because we want to make a shared pointer. 
+        //if we copy then make_shared, the pointer will be destroyed after we quit the scope.
+        auto& [element,tag,filepath] = song;
+        element=std::make_shared<Gempyre::Element>(*this,"div",songlist);
+        element->set_attribute("class","song");
+        const auto title = tag.title();
+        const auto artist = tag.artist();
+        const auto picsrc (tag.get_pic()?
+            "data:image/png;base64, "+GempyreUtils::base64_encode(reinterpret_cast<const unsigned char*>(tag.get_pic().value()), tag.pic_size()):
+            stock_coverart
+        );    
+        element->set_html(
+        "<img src='"+picsrc+"' >"
+        "<div class='songdetails'>"
+            "<h3>" + title + "</h3>"
+            "<p>" + artist + "</p>"
+        "</div>"
+        );
+        element->subscribe("click", std::bind(&mywindow::ononesongentryclicked,this,song));
         }
         
         auto stop =  std::chrono::high_resolution_clock::now();
         std::cout << "indexed in: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop-start).count() << "ms" << std::endl;
-    }
 }
 
 
@@ -301,13 +305,13 @@ void mywindow::toggledark(bool is_dark)
     }
     for(auto &[element,tag,path]:songs)
     {
-        if(!tag.get_pic() && !path.empty())
+        if(!tag.get_pic())
         {
             element->set_html(
             "<img src='"+stock_coverart+"' >"
             "<div class='songdetails'>"
-                "<h3>" + ((!tag.title().empty())? tag.title(): std::string("Not Kown")) + "</h3>"
-                "<p>" + ((!tag.artist().empty())? tag.artist(): std::string("Not Kown")) + "</p>"
+                "<h3>" + tag.title() + "</h3>"
+                "<p>" + tag.artist() + "</p>"
             "</div>"
             );
         }
