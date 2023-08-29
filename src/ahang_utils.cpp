@@ -51,7 +51,7 @@ std::optional<std::filesystem::path> ahang::get_os_music_path()
     using std::filesystem::path;
     #ifdef WINDOWS
     const auto username = std::getenv("username");
-    if(username) return path("C:\users")/username/"Music";
+    if(username) return path("C:\\users")/username/"Music";
     #else
     const auto username = std::getenv("USER");
     if(username) return path("/home")/username/"Music/";
