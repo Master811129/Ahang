@@ -49,9 +49,9 @@ debuginfo_button(*this,"button",this->root()),
 stock_coverart("song.png"),
 about_button(*this,"aboutbutton")
 {
-    debuginfo_button.set_style("position", "fixed");
     if constexpr (ahang_debug)
     {
+        debuginfo_button.set_style("position", "fixed");
         debuginfo_button.set_html("D");
         debuginfo_button.subscribe("click", std::bind(&mywindow::on_dbginfoclicked,this));
         debuginfo_button.set_style("right", "10px");
