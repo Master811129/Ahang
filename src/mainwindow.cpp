@@ -11,18 +11,16 @@
 #include <filesystem>
 #include <functional>
 #include <iomanip>
-#include <ios>
-#include <iostream>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <gempyre_utils.h>
 #include <thread>
-#include <fstream>
 #include <tuple>
 #include <vector>
 #include <mutex>
 #include <resources.h>
+#include <print>
 constexpr bool ahang_debug = false;
 constexpr auto scale_smaller = "scale(0.88)";
 
@@ -32,7 +30,7 @@ mywindow::mywindow(const std::string &index,const std::string &title,const int w
 Gempyre::Ui(Resourcesh,index,title,width,height),
 //Gempyre::Ui(Resourcesh,index,"weaver //target/0",""),//fake constructor for debug purposes
 //Gempyre::Ui(f,index,"","debug=True"),
-//Gempyre::Ui(Resourcesh,index,"xdg-open ",""),//fake constructor for debug purposes
+//Gempyre::Ui(Resourcesh,index,"",120,120),//fake constructor for debug purposes
 songlist(*this, "songlist"),
 bgblur(*this,"background-blur"),
 open_button(*this, "open"),
@@ -69,7 +67,7 @@ about_button(*this,"aboutbutton")
     next_button.subscribe("click", std::bind(&mywindow::play_next,this,true));
     seeker.subscribe("input", std::bind(&mywindow::onuserchangedseeker,this,std::placeholders::_1));
     this->start_periodic(200ms,std::bind(&mywindow::update_seeker_pos,this,std::placeholders::_1));
-    this->set_timer_on_hold(true);
+    //this->set_timer_on_hold(true);
     if(GempyreUtils::current_os()==GempyreUtils::OS::WinOs) about_button.subscribe("click",
     std::bind(&mywindow::alert,this,"Ahang\nSimple music player.\nSource code and donation:\nhttps://github.com/master811129/ahang"));
     else about_button.subscribe("click", std::bind(&mywindow::on_aboutbtnclicked,this));
@@ -89,7 +87,7 @@ void mywindow::index_songs_on_ui(const std::optional<std::filesystem::path>& dir
     if(!dir)return;
     for(auto &song : songs)std::get<0>(song)->remove();
     songs.clear();
-    auto start = std::chrono::high_resolution_clock::now();
+    const auto start = std::chrono::high_resolution_clock::now();
     for(const auto &entry : std::filesystem::recursive_directory_iterator(dir.value()))
     {
         if(entry.is_regular_file() && (entry.path().filename().string()[0]!='.') && ahang::is_supported(entry.path())) 
@@ -115,18 +113,17 @@ void mywindow::index_songs_on_ui(const std::optional<std::filesystem::path>& dir
             "data:image/png;base64, "+GempyreUtils::base64_encode(reinterpret_cast<const unsigned char*>(tag.get_pic().value()), tag.pic_size()):
             stock_coverart
         );    
-        element->set_html(
-        "<img src='"+picsrc+"' >"
+        element->set_html(std::format(
+        "<img src='{}' >"
         "<div class='songdetails'>"
-            "<h3>" + title + "</h3>"
-            "<p>" + artist + "</p>"
-        "</div>"
+            "<h3>{}</h3>"
+            "<p>{}</p>"
+        "</div>",picsrc,title,artist)
         );
         element->subscribe("click", std::bind(&mywindow::ononesongentryclicked,this,song));
         }
-        
-        auto stop =  std::chrono::high_resolution_clock::now();
-        std::cout << "indexed in: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop-start).count() << "ms" << std::endl;
+        const auto stop =  std::chrono::high_resolution_clock::now();
+        std::println("indexed in: {}",std::chrono::duration_cast<std::chrono::milliseconds>(stop-start));
 }
 
 
@@ -227,7 +224,7 @@ void mywindow::update_seeker_pos(Gempyre::Ui::TimerId id)
     seeker.set_attribute("value",std::to_string(music_player.get_position()));
     if(!music_player.is_active())
     {
-        this->set_timer_on_hold(true);
+        //this->set_timer_on_hold(true);
         coverartinoverview.set_style("transform", scale_smaller);
         play_button.set_style("background-image", "url('play.png')");
     }
@@ -301,7 +298,7 @@ void mywindow::toggledark(bool is_dark)
     for(const auto&[e,k,lightval,darkval] :lightcolorscheme)
     {
         std::array<std::reference_wrapper<const std::string>,2> lightdark{{lightval,darkval}};
-        e.get().set_style(k, lightdark[is_dark]);
+        e.get().set_style(k, lightdark[is_dark].get());
     }
     for(auto &[element,tag,path]:songs)
     {
@@ -338,14 +335,25 @@ void mywindow::on_aboutbtnclicked ()
 void mywindow::on_dbginfoclicked()//hidden button
 {
     const auto [first_gem_ver,second_gem_ver,third_gem_ver] = Gempyre::version();
-    std::cout << std::boolalpha << "-------------🚧DEBUG INFO🚧-------------" << 
-    "\nGempyre version: " << first_gem_ver << '.' << second_gem_ver << '.' <<third_gem_ver <<
-    "\nSoloud Version: " << music_player.pass_engine()->getVersion() <<
-    "\nNumber of indexed files: " << (songs.size()==0?songs.size(): songs.size()-1)  <<
-    "\nVolume from MusicPlayer class: " << music_player.pass_engine()->getGlobalVolume() << 
-    "\nstream position: " << music_player.get_position() << '%' <<
-    "\nis there any active stream? " << music_player.is_active() <<
-    "\nis stream paused? " << music_player.is_paused() <<
-    "\nis stream playing? " << music_player.is_playing() <<
-    "\n--------------------------------------\n" << std::endl;
+    std::println(
+
+R"({:-^43}
+{:-<35}{}.{}.{}
+{:-<35}{}
+{:-<35}{}
+{:-<35}{}
+{:-<35}{}
+{:-<35}{}
+{:-<35}{}
+{:-<35}{}
+-----------------------------------------)",
+    "🚧Debug Info🚧",
+    "Gempyre version:" ,first_gem_ver,second_gem_ver,third_gem_ver,
+    "Soloud Version:",music_player.pass_engine()->getVersion(),
+    "Number of indexed files:",songs.size(),
+    "Volume from MusicPlayer class:",music_player.pass_engine()->getGlobalVolume(),
+    "Stream position:",music_player.get_position(),
+    "Is there any active stream?",music_player.is_active(),
+    "Is stream paused?",music_player.is_paused(),
+    "Is stream playing?",music_player.is_playing());
 }

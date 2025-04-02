@@ -3,7 +3,7 @@
 #include <string>
 #include "ahang_utils.hpp"
 
-AboutDialog::AboutDialog(const Gempyre::Ui::Filemap& f, const std::string& indexhtml, const std::string& browser):
+AboutDialog::AboutDialog(const Gempyre::Ui::FileMap& f, const std::string& indexhtml, const std::string& browser):
 //Gempyre::Ui(f,indexhtml,browser,""),
 Gempyre::Ui(f,indexhtml,"about",600,249,Gempyre::Ui::NoResize),
 donation_link(*this,"donation"),

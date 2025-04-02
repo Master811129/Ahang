@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.11)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 project(ahang)
 
 set(resource_files 
+#ui/favicon.ico
 ui/index.html
 ui/song.png
 ui/style.css
@@ -18,7 +19,7 @@ ui/open.png
 ui/more.png
 ui/about.html
 ui/about.png
-ui/favicon.ico)
+)
 
 include(FetchContent)
 find_package(gempyre REQUIRED)
